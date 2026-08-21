@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>CBRS/C-band Adjacent Channel Measurements</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="page-header">
+        <div>
+            <h1>CBRS/C-band Adjacent Channel Measurements</h1>
+        </div>
+        <div class="header-note"><span></span>n77 restricted to MCG PCell</div>
+    </header>
+
+    <main>
+        <aside class="control-panel">
+            <section>
+                <div class="section-heading"><span>01</span><h2>Experiment</h2></div>
+                <label class="field-label">Location</label>
+                <div class="segmented" id="locationControl">
+                    <label><input type="radio" name="location" value="A" checked><span>A</span></label>
+                    <label><input type="radio" name="location" value="B"><span>B</span></label>
+                    <label><input type="radio" name="location" value="C"><span>C</span></label>
+                </div>
+
+                <label class="field-label">n48 TDD configuration</label>
+                <div class="segmented" id="configControl">
+                    <label><input type="radio" name="config" value="A" checked><span>Config A</span></label>
+                    <label><input type="radio" name="config" value="B"><span>Config B</span></label>
+                </div>
+            </section>
+
+            <section>
+                <div class="section-heading"><span>02</span><h2>Parameter</h2></div>
+                <select id="parameterSelect" aria-label="Measurement parameter"></select>
+                <p class="parameter-note" id="parameterNote"></p>
+            </section>
+
+            <section class="operation-section">
+                <div class="section-heading"><span>03</span><h2>Operations</h2></div>
+                <div class="operation-actions">
+                    <button type="button" id="selectAll">Select all</button>
+                    <button type="button" id="clearAll">Clear</button>
+                </div>
+                <div class="operation-grid operation-grid-header"><span>n48</span><span>n77</span></div>
+                <div id="operationGrid"></div>
+            </section>
+        </aside>
+
+        <section class="workspace">
+            <div class="workspace-head">
+                <div>
+                    <p class="eyebrow" id="experimentLabel">Location A · Config A</p>
+                    <h2 id="parameterTitle">SS-RSRP</h2>
+                </div>
+                <div class="window-readout" id="windowReadout">Window 0–150 s</div>
+            </div>
+
+            <article class="chart-card">
+                <div class="chart-heading">
+                    <div><span class="chart-index">A</span><h3>Empirical CDF</h3></div>
+                    <p>Computed only from samples inside the selected time window.</p>
+                </div>
+                <svg id="cdfChart" class="chart" viewBox="0 0 1000 410" role="img" aria-label="CDF chart"></svg>
+            </article>
+
+            <article class="chart-card">
+                <div class="chart-heading">
+                    <div><span class="chart-index">B</span><h3>Time domain</h3></div>
+                    <p>Drag the window to move it. Drag either edge to resize it.</p>
+                </div>
+                <svg id="timeChart" class="chart time-chart" viewBox="0 0 1000 430" role="img" aria-label="Time-domain chart"></svg>
+                <div class="brush-controls">
+                    <span id="brushStart">0.0 s</span>
+                    <div class="brush-rule"><i></i></div>
+                    <span id="brushEnd">150.0 s</span>
+                    <button type="button" id="resetWindow">Reset window</button>
+                </div>
+            </article>
+        </section>
+    </main>
+
+    <footer>QualiPoc measurements · n48 collections use the C_ prefix · n77 collections use the V_ prefix</footer>
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
