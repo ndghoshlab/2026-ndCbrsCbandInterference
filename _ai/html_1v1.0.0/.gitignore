@@ -2,6 +2,7 @@
 !.gitignore
 !index.html
 !app.js
+!debug.js
 !styles.css
 !data.js
 !README.md

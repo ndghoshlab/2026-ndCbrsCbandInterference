@@ -14,7 +14,12 @@
         <div class="header-note"><span></span>n77 restricted to MCG PCell</div>
     </header>
 
-    <main>
+    <nav class="tab-nav" aria-label="Dashboard views">
+        <button type="button" class="tab-button active" data-tab="explorerTab">CDF explorer</button>
+        <button type="button" class="tab-button" data-tab="debugTab">Debug</button>
+    </nav>
+
+    <main id="explorerTab" class="tab-page">
         <aside class="control-panel">
             <section>
                 <div class="section-heading"><span>01</span><h2>Experiment</h2></div>
@@ -82,8 +87,75 @@
         </section>
     </main>
 
+    <main id="debugTab" class="tab-page" hidden>
+        <aside class="control-panel">
+            <section>
+                <div class="section-heading"><span>01</span><h2>Experiment</h2></div>
+                <label class="field-label">Location</label>
+                <div class="segmented">
+                    <label><input type="radio" name="debugLocation" value="A" checked><span>A</span></label>
+                    <label><input type="radio" name="debugLocation" value="B"><span>B</span></label>
+                    <label><input type="radio" name="debugLocation" value="C"><span>C</span></label>
+                </div>
+
+                <label class="field-label">n48 TDD configuration</label>
+                <div class="segmented">
+                    <label><input type="radio" name="debugConfig" value="A" checked><span>Config A</span></label>
+                    <label><input type="radio" name="debugConfig" value="B"><span>Config B</span></label>
+                </div>
+            </section>
+
+            <section>
+                <div class="section-heading"><span>02</span><h2>Operation pair</h2></div>
+                <select id="debugOperation" aria-label="Simultaneous operation pair">
+                    <option value="4">n48 DL : n77 UL</option>
+                    <option value="5">n48 UL : n77 DL</option>
+                    <option value="6">n48 DL : n77 DL</option>
+                    <option value="7">n48 UL : n77 UL</option>
+                </select>
+                <p class="parameter-note">Both curves come from the two phones measured simultaneously.</p>
+            </section>
+
+            <section>
+                <div class="section-heading"><span>03</span><h2>Parameter</h2></div>
+                <select id="debugParameter" aria-label="Debug parameter">
+                    <optgroup label="PDSCH / PUSCH">
+                        <option value="throughput">Throughput</option>
+                        <option value="avgRbs">Avg RBs per Slot</option>
+                        <option value="rbs">#RBs</option>
+                        <option value="txPower">PUSCH Tx Power</option>
+                    </optgroup>
+                    <optgroup label="Radio">
+                        <option value="rsrp">SS-RSRP</option>
+                        <option value="rsrq">SS-RSRQ</option>
+                        <option value="sinr">SS-SINR</option>
+                    </optgroup>
+                </select>
+                <p class="parameter-note" id="debugParameterNote">UL uses PUSCH throughput; DL uses PDSCH throughput.</p>
+            </section>
+        </aside>
+
+        <section class="workspace">
+            <div class="workspace-head">
+                <div>
+                    <p class="eyebrow" id="debugExperimentLabel">Location A · Config A</p>
+                    <h2 id="debugParameterTitle">Throughput · n48 DL : n77 UL</h2>
+                </div>
+            </div>
+
+            <article class="chart-card">
+                <div class="chart-heading">
+                    <div><span class="chart-index">D</span><h3>Synchronized time domain</h3></div>
+                    <p>UL uses the left axis and DL uses the right axis when directions differ.</p>
+                </div>
+                <svg id="debugChart" class="chart debug-chart" viewBox="0 0 1100 440" role="img" aria-label="Synchronized debug chart"></svg>
+            </article>
+        </section>
+    </main>
+
     <footer>QualiPoc measurements · n48 collections use the C_ prefix · n77 collections use the V_ prefix</footer>
     <script src="data.js"></script>
     <script src="app.js"></script>
+    <script src="debug.js"></script>
 </body>
 </html>
