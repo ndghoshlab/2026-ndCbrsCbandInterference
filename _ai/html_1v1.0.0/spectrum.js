@@ -10,8 +10,8 @@
     const experiments = MAP.experiments.filter(experiment => experiment.spectrum);
     const operations = MAP.operations;
     const plot = {left: 74, right: 965, top: 26, bottom: 350};
-    const freqState = {set: "B", location: "B", config: "B", center: "median", envelope: "10-90", selected: new Set([0]), yLimits: [null, null]};
-    const powerState = {set: "B", location: "B", config: "B", band: "n48", summary: "median", interval: "10-90", selected: new Set([0]), xLimits: [null, null]};
+    const freqState = {set: "B", location: "B", config: "B", center: "mean", envelope: "10-90", selected: new Set([0]), yLimits: [null, null]};
+    const powerState = {set: "B", location: "B", config: "B", band: "n48", summary: "mean", interval: "10-90", selected: new Set([0]), xLimits: [null, null]};
     const freqChart = document.getElementById("spectrumFreqChart");
     const powerChart = document.getElementById("spectrumPowerChart");
 

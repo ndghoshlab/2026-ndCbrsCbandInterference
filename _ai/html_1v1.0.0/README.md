@@ -84,7 +84,7 @@ For example, collection range `049–057` represents Location A with n48 Config 
 
 ## Dashboard behavior
 
-### PHY CDF
+### PHY (CDF)
 
 The left control panel selects the measurement set, location, n48 TDD configuration, parameter, and individual n48/n77 operation measurements. Each checkbox selects one curve; the paired columns reflect the two systems' operations during the same experiment. Location A is disabled for Set B because no Set B measurements were collected there.
 
@@ -99,9 +99,9 @@ The highlighted time-domain window controls the CDF. Drag the middle of the wind
 
 Selected curves cycle through five distinguishable colors. n77 curves are also dashed to help distinguish them from n48 curves when colors repeat.
 
-### PHY Debug
+### PHY (DEBUG)
 
-The PHY Debug tab compares the two phones for the four experiments in which both systems were active simultaneously:
+The PHY (DEBUG) tab compares the two phones for the four experiments in which both systems were active simultaneously:
 
 - n48 DL : n77 UL
 - n48 UL : n77 DL
@@ -110,7 +110,7 @@ The PHY Debug tab compares the two phones for the four experiments in which both
 
 The two curves are aligned using their original measurement timestamps and displayed as elapsed time from the earliest selected series. For mixed-direction experiments, UL is plotted against the left y-axis and DL against the right y-axis. Same-direction experiments share one y-axis.
 
-The PHY Debug tab provides direction-aware comparisons for throughput, average RBs per slot, and total RBs. It automatically reads the PUSCH column for UL and the corresponding PDSCH column for DL. PUSCH Tx Power is read from `nr_pusch.csv` for both DL and UL experiments. SS-RSRP, SS-RSRQ, and SS-SINR are read from `nr_radio.csv` and share one axis.
+The PHY (DEBUG) tab provides direction-aware comparisons for throughput, average RBs per slot, and total RBs. It automatically reads the PUSCH column for UL and the corresponding PDSCH column for DL. PUSCH Tx Power is read from `nr_pusch.csv` for both DL and UL experiments. SS-RSRP, SS-RSRQ, and SS-SINR are read from `nr_radio.csv` and share one axis.
 
 ### Spectrum (Freq)
 

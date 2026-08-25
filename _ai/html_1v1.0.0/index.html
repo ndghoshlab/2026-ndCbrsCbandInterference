@@ -16,8 +16,8 @@
     </header>
 
     <nav class="tab-nav" aria-label="Dashboard views">
-        <button type="button" class="tab-button active" data-tab="explorerTab">PHY CDF</button>
-        <button type="button" class="tab-button" data-tab="debugTab">PHY Debug</button>
+        <button type="button" class="tab-button active" data-tab="explorerTab">PHY (CDF)</button>
+        <button type="button" class="tab-button" data-tab="debugTab">PHY (DEBUG)</button>
         <button type="button" class="tab-button" data-tab="spectrumFreqTab">Spectrum (Freq)</button>
         <button type="button" class="tab-button" data-tab="spectrumPowerTab">Spectrum (Power)</button>
     </nav>
@@ -203,8 +203,8 @@
                 <div class="section-heading"><span>02</span><h2>Spectrum statistic</h2></div>
                 <label class="field-label">Central curve</label>
                 <div class="segmented">
-                    <label><input type="radio" name="freqCenter" value="median" checked><span>Median</span></label>
-                    <label><input type="radio" name="freqCenter" value="mean"><span>Mean</span></label>
+                    <label><input type="radio" name="freqCenter" value="mean" checked><span>Mean</span></label>
+                    <label><input type="radio" name="freqCenter" value="median"><span>Median</span></label>
                 </div>
 
                 <label class="field-label">Transparent envelope</label>
@@ -287,8 +287,8 @@
 
                 <label class="field-label">Summary statistic</label>
                 <div class="segmented">
-                    <label><input type="radio" name="powerSummary" value="median" checked><span>Median</span></label>
-                    <label><input type="radio" name="powerSummary" value="mean"><span>Mean</span></label>
+                    <label><input type="radio" name="powerSummary" value="mean" checked><span>Mean</span></label>
+                    <label><input type="radio" name="powerSummary" value="median"><span>Median</span></label>
                 </div>
 
                 <label class="field-label">Percentile interval</label>
