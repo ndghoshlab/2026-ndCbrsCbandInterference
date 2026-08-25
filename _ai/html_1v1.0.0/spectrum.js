@@ -184,15 +184,17 @@
         svg.appendChild(el("text", {x: plot.left + 21, y: plot.bottom - 19, fill: "#152019", "font-weight": 750}, text));
     }
 
-    function drawLegend(svg, series, labelFunction, width = 410) {
+    function drawLegend(svg, series, labelFunction) {
         if (!series.length) return;
+        const labels = series.map(labelFunction);
+        const width = Math.min(455, Math.max(180, ...labels.map(label => label.length * 7 + 59)));
         const boxHeight = series.length * 22 + 16;
         const boxX = plot.right - width - 10, boxY = plot.top + 9;
         svg.appendChild(el("rect", {x: boxX, y: boxY, width, height: boxHeight, rx: 4, fill: "#fffdf8", stroke: "#bfc4be", "fill-opacity": 0.94}));
         series.forEach((item, index) => {
             const y = boxY + 20 + index * 22;
             svg.appendChild(el("line", {x1: boxX + 12, x2: boxX + 38, y1: y - 4, y2: y - 4, stroke: item.color, "stroke-width": 3}));
-            svg.appendChild(el("text", {x: boxX + 47, y}, labelFunction(item)));
+            svg.appendChild(el("text", {x: boxX + 47, y}, labels[index]));
         });
     }
 
@@ -267,7 +269,7 @@
         if (!series.length) powerChart.appendChild(el("text", {x: 520, y: 185, class: "empty-state"}, "Select at least one operation"));
         const [low, high] = powerState.interval.split("-");
         drawContext(powerChart, `Set ${powerState.set} · Location ${powerState.location} · Config ${powerState.config} · ${powerState.band} · ${low}–${high}%`, 390);
-        drawLegend(powerChart, series, item => `${operationLabel(item.index)} · ${powerState.summary} ${formatNumber(item.statistic)} · #${item.values.length}`, 455);
+        drawLegend(powerChart, series, item => `${operationLabel(item.index)} · ${powerState.summary} ${formatNumber(item.statistic)} · #${item.values.length}`);
         updatePowerLabels(series);
     }
 

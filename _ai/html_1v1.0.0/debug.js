@@ -165,14 +165,18 @@
     }
 
     function drawLegend(series) {
-        const boxX = plot.right - 335;
+        const labels = series.map(item => {
+            const values = item.points.map(point => point[1]);
+            return `${item.band} ${item.direction} · median ${formatNumber(median(values))} · #${values.length}`;
+        });
+        const boxWidth = Math.min(325, Math.max(175, ...labels.map(label => label.length * 7 + 59)));
+        const boxX = plot.right - boxWidth - 10;
         const boxY = plot.top + 10;
-        chart.appendChild(el("rect", {x: boxX, y: boxY, width: 325, height: 58, rx: 4, fill: "#fffdf8", stroke: "#bfc4be", "fill-opacity": 0.94}));
+        chart.appendChild(el("rect", {x: boxX, y: boxY, width: boxWidth, height: 58, rx: 4, fill: "#fffdf8", stroke: "#bfc4be", "fill-opacity": 0.94}));
         series.forEach((item, index) => {
             const y = boxY + 21 + index * 22;
-            const values = item.points.map(point => point[1]);
             chart.appendChild(el("line", {x1: boxX + 12, x2: boxX + 38, y1: y - 4, y2: y - 4, stroke: item.color, "stroke-width": 3, "stroke-dasharray": item.dashed ? "7 4" : "none"}));
-            chart.appendChild(el("text", {x: boxX + 47, y}, `${item.band} ${item.direction} · median ${formatNumber(median(values))} · #${values.length}`));
+            chart.appendChild(el("text", {x: boxX + 47, y}, labels[index]));
         });
     }
 

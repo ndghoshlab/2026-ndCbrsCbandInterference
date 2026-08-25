@@ -180,7 +180,11 @@
         if (!series.length) return;
         const columns = Math.ceil(series.length / 9);
         const rows = Math.min(series.length, 9);
-        const columnWidth = 350;
+        const labels = series.map(item => {
+            const values = item.points.filter(point => point[0] >= state.window[0] && point[0] <= state.window[1]).map(point => point[1]);
+            return `${item.label} · median ${formatNumber(median(values))} · #${values.length}`;
+        });
+        const columnWidth = Math.min(350, Math.max(175, ...labels.map(label => label.length * 6.2 + 44)));
         const boxWidth = columns * columnWidth + 20;
         const boxHeight = rows * 21 + 17;
         const boxX = plot.right - boxWidth - 10;
@@ -188,13 +192,12 @@
         svg.appendChild(el("rect", {x: boxX, y: boxY, width: boxWidth, height: boxHeight, rx: 4, fill: "#fffdf8", stroke: "#bfc4be", "fill-opacity": 0.94}));
 
         series.forEach((item, index) => {
-            const values = item.points.filter(point => point[0] >= state.window[0] && point[0] <= state.window[1]).map(point => point[1]);
             const column = Math.floor(index / 9);
             const row = index % 9;
             const x = boxX + 12 + column * columnWidth;
             const y = boxY + 19 + row * 21;
             svg.appendChild(el("line", {x1: x, x2: x + 24, y1: y - 4, y2: y - 4, stroke: item.color, "stroke-width": 3, "stroke-dasharray": item.dashed ? "7 4" : "none"}));
-            svg.appendChild(el("text", {x: x + 32, y, fill: "#28322c", "font-size": 11}, `${item.label} · median ${formatNumber(median(values))} · #${values.length}`));
+            svg.appendChild(el("text", {x: x + 32, y, fill: "#28322c", "font-size": 11}, labels[index]));
         });
     }
 
