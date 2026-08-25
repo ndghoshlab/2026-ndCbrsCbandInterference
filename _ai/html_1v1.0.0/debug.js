@@ -175,7 +175,7 @@
             const y = boxY + 21 + index * 22;
             const values = item.points.map(point => point[1]);
             chart.appendChild(el("line", {x1: boxX + 12, x2: boxX + 38, y1: y - 4, y2: y - 4, stroke: item.color, "stroke-width": 3, "stroke-dasharray": item.dashed ? "7 4" : "none"}));
-            chart.appendChild(el("text", {x: boxX + 47, y}, `${item.band} ${item.direction} · x̂ ${formatNumber(median(values))} · #${values.length}`));
+            chart.appendChild(el("text", {x: boxX + 47, y}, `${item.band} ${item.direction} · median ${formatNumber(median(values))} · #${values.length}`));
         });
     }
 
