@@ -326,10 +326,12 @@
     }
 
     function saveCdfPng() {
+        const pngWidth = Math.max(600, Math.min(3000, Number(document.getElementById("cdfPngWidth").value) || 1200));
+        const pngHeight = Math.round(pngWidth * 410 / 1000);
         const clone = cdfChart.cloneNode(true);
         clone.setAttribute("xmlns", SVG_NS);
-        clone.setAttribute("width", "1000");
-        clone.setAttribute("height", "410");
+        clone.setAttribute("width", pngWidth);
+        clone.setAttribute("height", pngHeight);
         const style = document.createElementNS(SVG_NS, "style");
         style.textContent = `text{fill:#59635d;font-family:Arial,sans-serif;font-size:12px}.axis-title{fill:#152019;font-size:14px;font-weight:700}.grid-line{stroke:#dedbd2;stroke-dasharray:4 5}.axis-line{stroke:#7a837d}.series-line{fill:none;stroke-width:2.3;stroke-linejoin:round;stroke-linecap:round}.empty-state{fill:#89918c;font-family:Georgia,serif;font-size:18px;text-anchor:middle}`;
         clone.prepend(style);
@@ -338,8 +340,8 @@
         const image = new Image();
         image.onload = () => {
             const canvas = document.createElement("canvas");
-            canvas.width = 2000;
-            canvas.height = 820;
+            canvas.width = pngWidth;
+            canvas.height = pngHeight;
             const context = canvas.getContext("2d");
             context.fillStyle = "#fffdf8";
             context.fillRect(0, 0, canvas.width, canvas.height);

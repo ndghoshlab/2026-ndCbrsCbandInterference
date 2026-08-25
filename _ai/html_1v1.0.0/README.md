@@ -95,7 +95,7 @@ The dashboard contains two linked plots:
 1. **Empirical CDF:** calculated from samples inside one selected time window or the union of two windows. Its legend reports the median and number of samples for each curve.
 2. **Time domain:** displays each collection using elapsed time from the beginning of that collection. Measurements are approximately 150 seconds long, and both selection windows can be moved or resized independently.
 
-The CDF x-axis uses the automatic padded data range by default. Enter an optional minimum, maximum, or both and select **Apply limits** to override it; select **Auto** to restore automatic limits. **Save PNG** downloads the currently rendered CDF with its curves, legend, and experiment label.
+The CDF x-axis uses the automatic padded data range by default. Enter an optional minimum, maximum, or both and select **Apply limits** to override it; select **Auto** to restore automatic limits. **PNG width** controls the exported image width in pixels and defaults to 1200. **Save PNG** downloads the currently rendered CDF with its curves, legend, and experiment label.
 
 The highlighted time-domain window controls the CDF. Use **Add second window** to select two separate intervals, **Remove second** to return to one, or **Reset** to restore the full interval. Overlapping windows are treated as a union, so samples are not counted twice. This makes it possible to exclude erroneous portions of a DL or UL test before comparing distributions.
 
