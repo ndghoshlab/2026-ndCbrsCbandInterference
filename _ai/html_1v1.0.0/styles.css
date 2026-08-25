@@ -134,7 +134,7 @@ footer { max-width: 1540px; margin: 0 auto; padding: 0 24px 34px; color: #7b847e
 .info-card p { margin: 10px 0; }
 .info-card ul { margin: 8px 0 18px; padding-left: 24px; }
 .info-card code { padding: 2px 5px; background: #eeece4; border-radius: 3px; font-size: 0.86em; }
-.info-card .formula { margin: 8px 0; padding: 11px 14px; overflow-x: auto; color: var(--ink); background: #eeece4; border-left: 3px solid var(--accent); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.88rem; white-space: nowrap; }
+.info-card .formula { margin: 8px 0; padding: 11px 14px; overflow-x: auto; color: var(--ink); background: #eeece4; border-left: 3px solid var(--accent); font-size: 0.95rem; text-align: center; }
 .info-card figure { margin: 22px 0 28px; }
 .info-card img { display: block; width: 100%; max-height: 560px; object-fit: contain; background: white; border: 1px solid var(--line); }
 .info-card figcaption { margin-top: 7px; color: var(--muted); font-size: 0.72rem; text-align: center; }

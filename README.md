@@ -32,12 +32,13 @@ This is not a simultaneous 160 MHz capture. A sweep observes different frequenci
 
 At each frequency `f`, the `N` sweep samples are first converted from dBm to linear power:
 
-> P_mW(f,t) = 10^(P_dBm(f,t) / 10)
+$$P_{\mathrm{mW}}(f,t)=10^{P_{\mathrm{dBm}}(f,t)/10}$$
 
 The mean is calculated in mW and then converted back to dBm:
 
-> Mean_mW(f) = (1/N) Σ_t P_mW(f,t)
-> Mean_dBm(f) = 10 log10(Mean_mW(f))
+$$\overline{P}_{\mathrm{mW}}(f)=\frac{1}{N}\sum_{t=1}^{N}P_{\mathrm{mW}}(f,t)$$
+
+$$\overline{P}_{\mathrm{dBm}}(f)=10\log_{10}\!\left(\overline{P}_{\mathrm{mW}}(f)\right)$$
 
 The median and percentile limits are taken across the same `N` samples at each frequency. Converting the samples to mW before calculating a percentile gives the same ranked percentile after conversion back to dBm because the conversion is monotonic. The transparent envelope joins the selected lower and upper percentile at every frequency.
 
@@ -47,15 +48,16 @@ The default curve is the linear-power mean. Median is available when a result le
 
 Each sweep produces one estimated power value for the selected band: n48 from 3660–3700 MHz or n77 from 3700–3800 MHz. Each linear bucket power is divided by the nominal RBW to approximate power spectral density:
 
-> S_i(t) = P_mW(f_i,t) / B_RBW
+$$S_i(t)=\frac{P_{\mathrm{mW}}(f_i,t)}{B_{\mathrm{RBW}}}$$
 
 The dashboard integrates those values with the trapezoidal rule. Here, `M` is the number of frequency points inside the selected band:
 
-> P_band,mW(t) ≈ Σ_(i=0)^(M−2) [(S_i(t) + S_(i+1)(t)) / 2] × (f_(i+1) − f_i)
-> P_band,dBm(t) = 10 log10(P_band,mW(t))
+$$P_{\mathrm{band,mW}}(t)\approx\sum_{i=0}^{M-2}\frac{S_i(t)+S_{i+1}(t)}{2}\left(f_{i+1}-f_i\right)$$
+
+$$P_{\mathrm{band,dBm}}(t)=10\log_{10}\!\left(P_{\mathrm{band,mW}}(t)\right)$$
 
 The empirical CDF uses all `N` per-sweep band-power estimates:
 
-> F_hat(x) = (1/N) Σ_(t=1)^N 1[P_band,dBm(t) ≤ x]
+$$\widehat{F}(x)=\frac{1}{N}\sum_{t=1}^{N}\mathbf{1}\!\left[P_{\mathrm{band,dBm}}(t)\leq x\right]$$
 
 Mean or median controls only the summary marker; it does not change the samples used by the CDF. The selected percentile interval is the shaded vertical region. Frequency and RBW use the same units in the integration: 0.4 MHz point spacing and 1 MHz RBW. Because the source uses a swept positive-peak detector and overlapping RBW buckets, this remains an estimated sweep-integrated power, not a simultaneous channel-power measurement.

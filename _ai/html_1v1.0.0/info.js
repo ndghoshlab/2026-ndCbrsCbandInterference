@@ -11,17 +11,19 @@
             const image = line.match(/^!\[([^\]]*)\]\(([^)]+)\)$/);
             const heading = line.match(/^(#{1,3})\s+(.+)$/);
             const item = line.match(/^-\s+(.+)$/);
-            const formula = line.match(/^>\s+(.+)$/);
+            const formula = line.match(/^\$\$(.+)\$\$$/);
 
             if (!item && listOpen) {html += "</ul>"; listOpen = false;}
             if (heading) html += `<h${heading[1].length}>${inline(heading[2])}</h${heading[1].length}>`;
             else if (image) html += `<figure><img src="../../${encodeURI(image[2])}" alt="${escapeHtml(image[1])}"><figcaption>${escapeHtml(image[1])}</figcaption></figure>`;
             else if (item) {if (!listOpen) {html += "<ul>"; listOpen = true;} html += `<li>${inline(item[1])}</li>`;}
-            else if (formula) html += `<div class="formula">${inline(formula[1])}</div>`;
+            else if (formula) html += `<div class="formula">\\[${escapeHtml(formula[1])}\\]</div>`;
             else if (line.trim()) html += `<p>${inline(line)}</p>`;
         });
         if (listOpen) html += "</ul>";
         container.innerHTML = html;
+        if (window.MathJax?.typesetPromise) window.MathJax.typesetPromise([container]);
+        else window.addEventListener("load", () => window.MathJax?.typesetPromise([container]), {once: true});
     }
 
     fetch("../../README.md", {cache: "no-cache"})
