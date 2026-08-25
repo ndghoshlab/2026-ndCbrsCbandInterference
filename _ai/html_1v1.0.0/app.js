@@ -12,7 +12,7 @@
     const operations = MAP.operations;
     const experiments = MAP.experiments.filter(experiment => experiment.qualipoc);
     const colors = ["#0072B2", "#D55E00", "#009E73", "#CC79A7", "#E69F00"];
-    const state = {set: "A", location: "A", config: "A", parameter: "radio|SS-RSRP", selected: new Set(["C:0", "V:0"]), window: [0, null], maxTime: 150, xLimits: [null, null]};
+    const state = {set: "A", location: "A", config: "A", parameter: "radio|SS-RSRP", selected: new Set(["C:0", "V:0"]), windows: [[0, null]], maxTime: 150, xLimits: [null, null]};
     const plot = {left: 74, right: 965, top: 26, bottom: 342};
 
     const parameterSelect = document.getElementById("parameterSelect");
@@ -98,6 +98,14 @@
         });
     }
 
+    function pointSelected(point) {
+        return state.windows.some(window => point[0] >= window[0] && point[0] <= window[1]);
+    }
+
+    function selectedValues(item) {
+        return item.points.filter(pointSelected).map(point => point[1]);
+    }
+
     function median(values) {
         if (!values.length) return NaN;
         const sorted = [...values].sort((a, b) => a - b);
@@ -181,7 +189,7 @@
         const columns = Math.ceil(series.length / 9);
         const rows = Math.min(series.length, 9);
         const labels = series.map(item => {
-            const values = item.points.filter(point => point[0] >= state.window[0] && point[0] <= state.window[1]).map(point => point[1]);
+            const values = selectedValues(item);
             return `${item.label} · median ${formatNumber(median(values))} · #${values.length}`;
         });
         const columnWidth = Math.min(350, Math.max(175, ...labels.map(label => label.length * 6.2 + 44)));
@@ -204,7 +212,7 @@
     function renderCDF(series) {
         cdfChart.innerHTML = "";
         const prepared = series.map(item => {
-            const values = item.points.filter(point => point[0] >= state.window[0] && point[0] <= state.window[1]).map(point => point[1]).sort((a, b) => a - b);
+            const values = selectedValues(item).sort((a, b) => a - b);
             const points = values.map((value, index) => [value, values.length === 1 ? 1 : index / (values.length - 1)]);
             return {...item, values, cdfPoints: points};
         });
@@ -242,14 +250,16 @@
         });
         if (!allValues.length) timeChart.appendChild(el("text", {x: 520, y: 180, class: "empty-state"}, "No data for the selected series"));
 
-        const startX = scales.xScale(state.window[0]);
-        const endX = scales.xScale(state.window[1]);
-        const selection = el("rect", {x: startX, y: plot.top, width: Math.max(1, endX - startX), height: plot.bottom - plot.top, class: "selection-window", "data-drag": "move"});
-        timeChart.appendChild(selection);
-        timeChart.appendChild(el("line", {x1: startX, x2: startX, y1: plot.top, y2: plot.bottom, class: "selection-handle", "data-drag": "start"}));
-        timeChart.appendChild(el("line", {x1: endX, x2: endX, y1: plot.top, y2: plot.bottom, class: "selection-handle", "data-drag": "end"}));
-        timeChart.appendChild(el("circle", {cx: startX, cy: plot.top + 13, r: 4, class: "selection-grip"}));
-        timeChart.appendChild(el("circle", {cx: endX, cy: plot.top + 13, r: 4, class: "selection-grip"}));
+        state.windows.forEach((window, index) => {
+            const startX = scales.xScale(window[0]);
+            const endX = scales.xScale(window[1]);
+            const windowClass = index ? " window-2" : "";
+            timeChart.appendChild(el("rect", {x: startX, y: plot.top, width: Math.max(1, endX - startX), height: plot.bottom - plot.top, class: `selection-window${windowClass}`, "data-drag": "move", "data-window": index}));
+            timeChart.appendChild(el("line", {x1: startX, x2: startX, y1: plot.top, y2: plot.bottom, class: `selection-handle${windowClass}`, "data-drag": "start", "data-window": index}));
+            timeChart.appendChild(el("line", {x1: endX, x2: endX, y1: plot.top, y2: plot.bottom, class: `selection-handle${windowClass}`, "data-drag": "end", "data-window": index}));
+            timeChart.appendChild(el("circle", {cx: startX, cy: plot.top + 13, r: 4, class: `selection-grip${windowClass}`}));
+            timeChart.appendChild(el("circle", {cx: endX, cy: plot.top + 13, r: 4, class: `selection-grip${windowClass}`}));
+        });
         drawExperimentLabel(timeChart);
         attachBrushEvents();
     }
@@ -259,24 +269,41 @@
         document.getElementById("experimentLabel").textContent = `Set ${state.set} · Location ${state.location} · Config ${state.config}`;
         document.getElementById("parameterTitle").textContent = parameter.label;
         document.getElementById("parameterNote").textContent = parameter.unit ? `Displayed in ${parameter.unit}` : "Unitless measurement";
-        document.getElementById("windowReadout").textContent = `Window ${state.window[0].toFixed(1)}–${state.window[1].toFixed(1)} s`;
-        document.getElementById("brushStart").textContent = `${state.window[0].toFixed(1)} s`;
-        document.getElementById("brushEnd").textContent = `${state.window[1].toFixed(1)} s`;
+        const ranges = state.windows.map((window, index) => `${index + 1}: ${window[0].toFixed(1)}–${window[1].toFixed(1)} s`);
+        document.getElementById("windowReadout").textContent = `${state.windows.length > 1 ? "Windows" : "Window"} ${ranges.join(" + ")}`;
+        document.getElementById("windowRanges").textContent = ranges.map(range => `Window ${range}`).join("  ·  ");
+        document.getElementById("addWindow").disabled = state.windows.length > 1;
+        document.getElementById("removeWindow").disabled = state.windows.length === 1;
     }
 
     function render() {
         const series = selectedSeries();
         const maxTime = Math.max(0, ...series.flatMap(item => item.points.map(point => point[0])));
         state.maxTime = Math.max(1, Math.ceil(maxTime || 150));
-        if (state.window[1] === null || state.window[1] > state.maxTime) state.window[1] = state.maxTime;
-        if (state.window[0] > state.window[1]) state.window[0] = 0;
+        state.windows = state.windows.map(window => {
+            const end = window[1] === null ? state.maxTime : Math.min(window[1], state.maxTime);
+            return [Math.min(window[0], Math.max(0, end - 0.5)), end];
+        });
         updateLabels();
         renderCDF(series);
         renderTime(series);
     }
 
     function resetWindow() {
-        state.window = [0, null];
+        state.windows = [[0, null]];
+        render();
+    }
+
+    function addWindow() {
+        if (state.windows.length > 1) return;
+        if (state.windows[0][0] === 0 && state.windows[0][1] === state.maxTime) state.windows[0] = [0, state.maxTime * 0.4];
+        state.windows.push([state.maxTime * 0.6, state.maxTime]);
+        render();
+    }
+
+    function removeWindow() {
+        if (state.windows.length === 1) return;
+        state.windows.pop();
         render();
     }
 
@@ -286,7 +313,7 @@
         const min = minInput.value === "" ? null : Number(minInput.value);
         const max = maxInput.value === "" ? null : Number(maxInput.value);
         const series = selectedSeries();
-        const values = series.flatMap(item => item.points.filter(point => point[0] >= state.window[0] && point[0] <= state.window[1]).map(point => point[1]));
+        const values = series.flatMap(selectedValues);
         const autoDomain = niceDomain(values);
         if ((min ?? autoDomain[0]) >= (max ?? autoDomain[1])) {
             maxInput.setCustomValidity("X max must be greater than X min.");
@@ -336,20 +363,22 @@
         timeChart.querySelectorAll("[data-drag]").forEach(target => target.addEventListener("pointerdown", event => {
             event.preventDefault();
             const mode = event.target.dataset.drag;
+            const windowIndex = Number(event.target.dataset.window);
             const origin = pointerTime(event);
-            const initial = [...state.window];
+            const initial = [...state.windows[windowIndex]];
             const width = initial[1] - initial[0];
             event.target.setPointerCapture(event.pointerId);
 
             const move = moveEvent => {
                 const current = pointerTime(moveEvent);
-                if (mode === "start") state.window[0] = Math.min(current, state.window[1] - 0.5);
-                if (mode === "end") state.window[1] = Math.max(current, state.window[0] + 0.5);
+                const activeWindow = state.windows[windowIndex];
+                if (mode === "start") activeWindow[0] = Math.min(current, activeWindow[1] - 0.5);
+                if (mode === "end") activeWindow[1] = Math.max(current, activeWindow[0] + 0.5);
                 if (mode === "move") {
                     const delta = current - origin;
                     let start = initial[0] + delta;
                     start = Math.max(0, Math.min(state.maxTime - width, start));
-                    state.window = [start, start + width];
+                    state.windows[windowIndex] = [start, start + width];
                 }
                 render();
             };
@@ -397,6 +426,8 @@
         resetWindow();
     });
     document.getElementById("resetWindow").addEventListener("click", resetWindow);
+    document.getElementById("addWindow").addEventListener("click", addWindow);
+    document.getElementById("removeWindow").addEventListener("click", removeWindow);
     document.getElementById("applyXLimits").addEventListener("click", applyXLimits);
     document.getElementById("autoXLimits").addEventListener("click", () => {
         state.xLimits = [null, null];

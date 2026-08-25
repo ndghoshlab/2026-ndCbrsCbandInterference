@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>CBRS/C-band Adjacent Channel Measurements</title>
-    <link rel="stylesheet" href="styles.css?v=1.4.3">
+    <link rel="stylesheet" href="styles.css?v=1.5.0">
     <style>[hidden] { display: none !important; }</style>
     <script>window.MathJax = {svg: {fontCache: "global"}};</script>
     <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
@@ -78,7 +78,7 @@
             <article class="chart-card">
                 <div class="chart-heading">
                     <div><span class="chart-index">A</span><h3>Empirical CDF</h3></div>
-                    <p>Computed only from samples inside the selected time window.</p>
+                    <p>Computed only from samples inside the selected time window or windows.</p>
                 </div>
                 <div class="chart-tools">
                     <label>X min <input type="number" id="cdfXMin" step="any" placeholder="Auto"></label>
@@ -93,14 +93,16 @@
             <article class="chart-card">
                 <div class="chart-heading">
                     <div><span class="chart-index">B</span><h3>Time domain</h3></div>
-                    <p>Drag the window to move it. Drag either edge to resize it.</p>
+                    <p>Drag a window to move it. Drag either edge to resize it.</p>
                 </div>
                 <svg id="timeChart" class="chart time-chart" viewBox="0 0 1000 430" role="img" aria-label="Time-domain chart"></svg>
                 <div class="brush-controls">
-                    <span id="brushStart">0.0 s</span>
-                    <div class="brush-rule"><i></i></div>
-                    <span id="brushEnd">150.0 s</span>
-                    <button type="button" id="resetWindow">Reset window</button>
+                    <span id="windowRanges">Window 1: 0.0–150.0 s</span>
+                    <div class="brush-actions">
+                        <button type="button" id="addWindow">Add second window</button>
+                        <button type="button" id="removeWindow" disabled>Remove second</button>
+                        <button type="button" id="resetWindow">Reset</button>
+                    </div>
                 </div>
             </article>
         </section>
@@ -348,7 +350,7 @@
     <script src="experiment-map.js?v=1.4.0"></script>
     <script src="data.js?v=1.4.0"></script>
     <script src="spectrum-data.js?v=1.4.0"></script>
-    <script src="app.js?v=1.4.4"></script>
+    <script src="app.js?v=1.5.0"></script>
     <script src="debug.js?v=1.4.4"></script>
     <script src="spectrum.js?v=1.4.4"></script>
     <script src="info.js?v=1.4.3"></script>
