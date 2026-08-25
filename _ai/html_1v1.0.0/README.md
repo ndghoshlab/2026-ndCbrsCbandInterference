@@ -84,7 +84,7 @@ For example, collection range `049–057` represents Location A with n48 Config 
 
 ## Dashboard behavior
 
-The rightmost **INFO** tab is rendered from the repository-root `INFO.md`. Edit that Markdown file to update the experiment explanation without changing the dashboard HTML.
+The rightmost **INFO** tab is rendered from the repository-root `README.md`. Edit that Markdown file to update the experiment explanation without changing the dashboard HTML.
 
 ### PHY (CDF)
 
