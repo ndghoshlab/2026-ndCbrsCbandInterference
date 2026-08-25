@@ -100,6 +100,9 @@ button:hover { background: #edf3ef; }
 .chart-index { display: grid; place-items: center; width: 26px; height: 26px; color: white; background: var(--ink); border-radius: 3px; font-family: Georgia, serif; font-size: 0.8rem; }
 .chart { display: block; width: 100%; height: auto; min-height: 300px; overflow: visible; touch-action: none; }
 .chart text { fill: #59635d; font-family: Inter, ui-sans-serif, system-ui, sans-serif; font-size: 12px; }
+.cdf-chart text { font-size: 15px; }
+.chart.cdf-chart .axis-title { font-size: 18px; }
+.cdf-chart .empty-state { font-size: 20px; }
 .chart .axis-title { fill: var(--ink); font-size: 14px; font-weight: 750; }
 .chart .grid-line { stroke: #dedbd2; stroke-dasharray: 4 5; }
 .chart .band-edge { stroke: #787f7a; stroke-width: 1.4; }
@@ -128,6 +131,26 @@ button:hover { background: #edf3ef; }
 .brush-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 7px; }
 .brush-actions button:disabled { color: #a8ada9; cursor: not-allowed; }
 
+.debug2-page { grid-template-columns: 430px minmax(0, 1fr); }
+.debug2-builder { align-self: start; max-height: calc(100vh - 36px); overflow-y: auto; background: var(--card); border: 1px solid var(--line); box-shadow: var(--shadow); }
+.debug2-toolbar { display: grid; grid-template-columns: 1fr auto; align-items: end; gap: 10px; padding: 18px 18px 12px; }
+.debug2-note { margin: 0; padding: 0 18px 14px; color: var(--muted); font-size: 0.72rem; line-height: 1.45; }
+.curve-entry-list { display: grid; gap: 10px; padding: 0 12px 12px; }
+.curve-entry { padding: 14px; border: 1px solid var(--line); border-left: 4px solid var(--curve-color); border-radius: 5px; background: #faf8f2; }
+.curve-entry-head, .curve-operations-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.curve-entry-head strong { font-size: 0.82rem; }
+.curve-label-input { width: 100%; padding: 8px 9px; border: 1px solid #c9c6bc; border-radius: 5px; font: inherit; font-size: 0.78rem; }
+.curve-filter-row { display: grid; grid-template-columns: 76px 1fr; align-items: center; gap: 8px; margin-top: 9px; }
+.curve-filter-row > span, .curve-operations-head > span { color: var(--muted); font-size: 0.67rem; font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase; }
+.curve-filter-row select { padding: 7px 9px; font-size: 0.76rem; }
+.mini-checks, .curve-operation-grid { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 4px; }
+.mini-checks input, .curve-operation-grid input { position: absolute; opacity: 0; }
+.mini-checks span, .curve-operation-grid span { display: block; padding: 6px 4px; color: var(--muted); background: white; border: 1px solid #d8d5cb; border-radius: 4px; cursor: pointer; font-size: 0.67rem; font-weight: 750; text-align: center; }
+.mini-checks input:checked + span, .curve-operation-grid input:checked + span { color: white; background: var(--green); border-color: var(--green); }
+.curve-operations-head { margin-top: 11px; }
+.curve-operations-head div { display: flex; gap: 4px; }
+.curve-operation-grid { grid-auto-flow: row; grid-template-columns: repeat(3, 1fr); margin-top: 6px; }
+
 footer { max-width: 1540px; margin: 0 auto; padding: 0 24px 34px; color: #7b847e; font-size: 0.7rem; text-align: right; }
 .info-page { display: block; max-width: 1060px; }
 .info-card { padding: 34px 42px; background: var(--card); border: 1px solid var(--line); box-shadow: var(--shadow); }
@@ -147,6 +170,8 @@ footer { max-width: 1540px; margin: 0 auto; padding: 0 24px 34px; color: #7b847e
     main { grid-template-columns: 1fr; }
     .control-panel { position: static; }
     .operation-section { max-height: none; }
+    .debug2-page { grid-template-columns: 1fr; }
+    .debug2-builder { max-height: none; }
 }
 
 @media (max-width: 600px) {

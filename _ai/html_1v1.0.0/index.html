@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>CBRS/C-band Adjacent Channel Measurements</title>
-    <link rel="stylesheet" href="styles.css?v=1.5.3">
+    <link rel="stylesheet" href="styles.css?v=1.6.6">
     <style>[hidden] { display: none !important; }</style>
     <script>window.MathJax = {svg: {fontCache: "global"}};</script>
     <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
@@ -19,7 +19,8 @@
 
     <nav class="tab-nav" aria-label="Dashboard views">
         <button type="button" class="tab-button active" data-tab="explorerTab">PHY (CDF)</button>
-        <button type="button" class="tab-button" data-tab="debugTab">PHY (DEBUG)</button>
+        <button type="button" class="tab-button" data-tab="debugTab">PHY (DEBUG1)</button>
+        <button type="button" class="tab-button" data-tab="debug2Tab">PHY (DEBUG2)</button>
         <button type="button" class="tab-button" data-tab="spectrumFreqTab">Spectrum (Freq)</button>
         <button type="button" class="tab-button" data-tab="spectrumPowerTab">Spectrum (Power)</button>
         <button type="button" class="tab-button info-tab" data-tab="infoTab">INFO</button>
@@ -88,7 +89,7 @@
                     <label>PNG width (px) <input type="number" id="cdfPngWidth" value="1200" min="600" max="3000" step="100"></label>
                     <button type="button" id="saveCdfPng">Save PNG</button>
                 </div>
-                <svg id="cdfChart" class="chart" viewBox="0 0 1000 410" role="img" aria-label="CDF chart"></svg>
+                <svg id="cdfChart" class="chart cdf-chart" viewBox="0 0 1000 410" role="img" aria-label="CDF chart"></svg>
             </article>
 
             <article class="chart-card">
@@ -177,6 +178,45 @@
                     <p>UL uses the left axis and DL uses the right axis when directions differ.</p>
                 </div>
                 <svg id="debugChart" class="chart debug-chart" viewBox="0 0 1100 440" role="img" aria-label="Synchronized debug chart"></svg>
+            </article>
+        </section>
+    </main>
+
+    <main id="debug2Tab" class="tab-page debug2-page" hidden>
+        <aside class="debug2-builder">
+            <section class="debug2-toolbar">
+                <div>
+                    <label class="field-label" for="debug2Parameter">Parameter</label>
+                    <select id="debug2Parameter"></select>
+                </div>
+                <button type="button" id="addDebug2Curve">Add curve</button>
+            </section>
+            <p class="debug2-note">Each curve pools samples from every matching collection. Combinations without data are ignored.</p>
+            <div id="debug2CurveEntries" class="curve-entry-list"></div>
+        </aside>
+
+        <section class="workspace">
+            <div class="workspace-head">
+                <div>
+                    <p class="eyebrow">Combined collection comparison</p>
+                    <h2 id="debug2ParameterTitle">SS-RSRP</h2>
+                </div>
+            </div>
+
+            <article class="chart-card">
+                <div class="chart-heading">
+                    <div><span class="chart-index">D2</span><h3>Empirical CDF</h3></div>
+                    <p>Each entry produces one curve from its pooled samples.</p>
+                </div>
+                <div class="chart-tools">
+                    <label>X min <input type="number" id="debug2XMin" step="any" placeholder="Auto"></label>
+                    <label>X max <input type="number" id="debug2XMax" step="any" placeholder="Auto"></label>
+                    <button type="button" id="applyDebug2XLimits">Apply limits</button>
+                    <button type="button" id="autoDebug2XLimits">Auto</button>
+                    <label>PNG width (px) <input type="number" id="debug2PngWidth" value="1200" min="600" max="3000" step="100"></label>
+                    <button type="button" id="saveDebug2Png">Save PNG</button>
+                </div>
+                <svg id="debug2Chart" class="chart cdf-chart" viewBox="0 0 1000 430" role="img" aria-label="Combined collection CDF chart"></svg>
             </article>
         </section>
     </main>
@@ -339,7 +379,7 @@
                     <label>PNG width (px) <input type="number" id="powerPngWidth" value="1200" min="600" max="3000" step="100"></label>
                     <button type="button" id="savePowerPng">Save PNG</button>
                 </div>
-                <svg id="spectrumPowerChart" class="chart" viewBox="0 0 1000 430" role="img" aria-label="Band-power CDF chart"></svg>
+                <svg id="spectrumPowerChart" class="chart cdf-chart" viewBox="0 0 1000 430" role="img" aria-label="Band-power CDF chart"></svg>
             </article>
         </section>
     </main>
@@ -352,9 +392,10 @@
     <script src="experiment-map.js?v=1.4.0"></script>
     <script src="data.js?v=1.4.0"></script>
     <script src="spectrum-data.js?v=1.4.0"></script>
-    <script src="app.js?v=1.5.1"></script>
-    <script src="debug.js?v=1.4.4"></script>
-    <script src="spectrum.js?v=1.5.2"></script>
+    <script src="app.js?v=1.6.5"></script>
+    <script src="debug.js?v=1.6.0"></script>
+    <script src="debug2.js?v=1.6.5"></script>
+    <script src="spectrum.js?v=1.6.5"></script>
     <script src="info.js?v=1.4.3"></script>
 </body>
 </html>
