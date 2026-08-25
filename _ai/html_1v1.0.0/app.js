@@ -196,7 +196,7 @@
             const x = boxX + 12 + column * columnWidth;
             const y = boxY + 19 + row * 21;
             svg.appendChild(el("line", {x1: x, x2: x + 24, y1: y - 4, y2: y - 4, stroke: item.color, "stroke-width": 3, "stroke-dasharray": item.dashed ? "7 4" : "none"}));
-            svg.appendChild(el("text", {x: x + 32, y, fill: "#28322c", "font-size": 11}, `${item.label} · median ${formatNumber(median(values))} · #${values.length}`));
+            svg.appendChild(el("text", {x: x + 32, y, fill: "#28322c", "font-size": 11}, `${item.label} · x̂ ${formatNumber(median(values))} · #${values.length}`));
         });
     }
 
