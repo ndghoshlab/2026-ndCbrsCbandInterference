@@ -3,7 +3,10 @@
 
     const DATA = window.CBRS_DATA;
     const SVG_NS = "http://www.w3.org/2000/svg";
-    const experimentStarts = {A: {A: 4, B: 49}, B: {A: 13, B: 58}, C: {A: 22, B: 67}};
+    const experimentStarts = {
+        A: {A: {A: 4, B: 49}, B: {A: 13, B: 58}, C: {A: 22, B: 67}},
+        B: {B: {A: 103, B: 76}, C: {A: 94, B: 85}}
+    };
     const operationPairs = {
         4: {n48: "DL", n77: "UL"},
         5: {n48: "UL", n77: "DL"},
@@ -38,7 +41,7 @@
         sinr: {label: "SS-SINR", unit: "dB", kind: "shared", source: "radio", column: "SS-SINR", note: "Radio values are read from nr_radio."}
     };
     const colors = {C: "#009E73", V: "#D55E00"};
-    const state = {location: "A", config: "A", operation: 4, metric: "throughput"};
+    const state = {set: "A", location: "A", config: "A", operation: 4, metric: "throughput"};
     const chart = document.getElementById("debugChart");
     const plot = {left: 82, right: 1018, top: 28, bottom: 354};
 
@@ -95,10 +98,19 @@
         return `${prefix}${metric.label}${metric.unit ? ` [${metric.unit}]` : ""}`;
     }
 
+    function updateLocationAvailability() {
+        const locationA = document.querySelector('input[name="debugLocation"][value="A"]');
+        locationA.disabled = state.set === "B";
+        if (locationA.disabled && state.location === "A") {
+            state.location = "B";
+            document.querySelector('input[name="debugLocation"][value="B"]').checked = true;
+        }
+    }
+
     function selectedSeries() {
         const pair = operationPairs[state.operation];
         const metric = metrics[state.metric];
-        const number = String(experimentStarts[state.location][state.config] + state.operation).padStart(3, "0");
+        const number = String(experimentStarts[state.set][state.location][state.config] + state.operation).padStart(3, "0");
         const definitions = [
             {prefix: "C", band: "n48", direction: pair.n48},
             {prefix: "V", band: "n77", direction: pair.n77}
@@ -150,8 +162,8 @@
     }
 
     function drawContext(pair) {
-        const text = `Location ${state.location} · n48 TDD Config ${state.config} · n48 ${pair.n48} : n77 ${pair.n77}`;
-        chart.appendChild(el("rect", {x: plot.left + 11, y: plot.top + 10, width: 350, height: 28, rx: 3, fill: "#fffdf8", stroke: "#d8d5cb", "fill-opacity": 0.93}));
+        const text = `Set ${state.set} · Location ${state.location} · n48 TDD Config ${state.config} · n48 ${pair.n48} : n77 ${pair.n77}`;
+        chart.appendChild(el("rect", {x: plot.left + 11, y: plot.top + 10, width: 395, height: 28, rx: 3, fill: "#fffdf8", stroke: "#d8d5cb", "fill-opacity": 0.93}));
         chart.appendChild(el("text", {x: plot.left + 22, y: plot.top + 29, class: "debug-context"}, text));
     }
 
@@ -190,7 +202,7 @@
         drawContext(pair);
         drawLegend(series);
 
-        document.getElementById("debugExperimentLabel").textContent = `Location ${state.location} · Config ${state.config}`;
+        document.getElementById("debugExperimentLabel").textContent = `Set ${state.set} · Location ${state.location} · Config ${state.config}`;
         document.getElementById("debugParameterTitle").textContent = `${metric.label} · n48 ${pair.n48} : n77 ${pair.n77}`;
         document.getElementById("debugParameterNote").textContent = metric.note;
     }
@@ -200,10 +212,16 @@
         document.querySelectorAll(".tab-page").forEach(page => page.hidden = page.id !== button.dataset.tab);
         if (button.dataset.tab === "debugTab") render();
     }));
+    document.querySelectorAll('input[name="debugSet"]').forEach(input => input.addEventListener("change", event => {
+        state.set = event.target.value;
+        updateLocationAvailability();
+        render();
+    }));
     document.querySelectorAll('input[name="debugLocation"]').forEach(input => input.addEventListener("change", event => {state.location = event.target.value; render();}));
     document.querySelectorAll('input[name="debugConfig"]').forEach(input => input.addEventListener("change", event => {state.config = event.target.value; render();}));
     document.getElementById("debugOperation").addEventListener("change", event => {state.operation = Number(event.target.value); render();});
     document.getElementById("debugParameter").addEventListener("change", event => {state.metric = event.target.value; render();});
 
+    updateLocationAvailability();
     render();
 })();

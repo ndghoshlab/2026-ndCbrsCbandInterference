@@ -8,14 +8,17 @@
     }
 
     const SVG_NS = "http://www.w3.org/2000/svg";
-    const experimentStarts = {A: {A: 4, B: 49}, B: {A: 13, B: 58}, C: {A: 22, B: 67}};
+    const experimentStarts = {
+        A: {A: {A: 4, B: 49}, B: {A: 13, B: 58}, C: {A: 22, B: 67}},
+        B: {B: {A: 103, B: 76}, C: {A: 94, B: 85}}
+    };
     const operations = [
         {n48: "UL", n77: "idle"}, {n48: "DL", n77: "idle"}, {n48: "idle", n77: "UL"},
         {n48: "idle", n77: "DL"}, {n48: "DL", n77: "UL"}, {n48: "UL", n77: "DL"},
         {n48: "DL", n77: "DL"}, {n48: "UL", n77: "UL"}, {n48: "idle", n77: "idle"}
     ];
     const colors = ["#0072B2", "#D55E00", "#009E73", "#CC79A7", "#E69F00"];
-    const state = {location: "A", config: "A", parameter: "radio|SS-RSRP", selected: new Set(["C:0", "V:0"]), window: [0, null], maxTime: 150};
+    const state = {set: "A", location: "A", config: "A", parameter: "radio|SS-RSRP", selected: new Set(["C:0", "V:0"]), window: [0, null], maxTime: 150, xLimits: [null, null]};
     const plot = {left: 74, right: 965, top: 26, bottom: 342};
 
     const parameterSelect = document.getElementById("parameterSelect");
@@ -47,7 +50,16 @@
     }
 
     function collectionNumber(index) {
-        return String(experimentStarts[state.location][state.config] + index).padStart(3, "0");
+        return String(experimentStarts[state.set][state.location][state.config] + index).padStart(3, "0");
+    }
+
+    function updateLocationAvailability() {
+        const locationA = document.querySelector('input[name="location"][value="A"]');
+        locationA.disabled = state.set === "B";
+        if (locationA.disabled && state.location === "A") {
+            state.location = "B";
+            document.querySelector('input[name="location"][value="B"]').checked = true;
+        }
     }
 
     function renderOperationGrid() {
@@ -161,8 +173,8 @@
     }
 
     function drawExperimentLabel(svg, y = plot.top + 9) {
-        const label = `Location ${state.location} · n48 TDD Config ${state.config}`;
-        svg.appendChild(el("rect", {x: plot.left + 10, y, width: 225, height: 27, rx: 3, fill: "#fffdf8", stroke: "#d8d5cb", "fill-opacity": 0.93}));
+        const label = `Set ${state.set} · Location ${state.location} · n48 TDD Config ${state.config}`;
+        svg.appendChild(el("rect", {x: plot.left + 10, y, width: 280, height: 27, rx: 3, fill: "#fffdf8", stroke: "#d8d5cb", "fill-opacity": 0.93}));
         svg.appendChild(el("text", {x: plot.left + 21, y: y + 18, fill: "#152019", "font-weight": 750}, label));
     }
 
@@ -196,12 +208,20 @@
             return {...item, values, cdfPoints: points};
         });
         const allValues = prepared.flatMap(item => item.values);
-        const xDomain = niceDomain(allValues);
+        const autoDomain = niceDomain(allValues);
+        const xDomain = [state.xLimits[0] ?? autoDomain[0], state.xLimits[1] ?? autoDomain[1]];
+        document.getElementById("cdfXMin").placeholder = formatNumber(autoDomain[0]);
+        document.getElementById("cdfXMax").placeholder = formatNumber(autoDomain[1]);
         const scales = drawAxes(cdfChart, xDomain, [0, 1], axisLabel(), "CDF");
+        const clip = el("clipPath", {id: "cdfPlotClip"});
+        clip.appendChild(el("rect", {x: plot.left, y: plot.top, width: plot.right - plot.left, height: plot.bottom - plot.top}));
+        const definitions = el("defs");
+        definitions.appendChild(clip);
+        cdfChart.appendChild(definitions);
 
         prepared.forEach(item => {
             if (!item.cdfPoints.length) return;
-            cdfChart.appendChild(el("path", {d: linePath(item.cdfPoints, scales.xScale, scales.yScale), class: "series-line", stroke: item.color, "stroke-dasharray": item.dashed ? "8 5" : "none"}));
+            cdfChart.appendChild(el("path", {d: linePath(item.cdfPoints, scales.xScale, scales.yScale), class: "series-line", stroke: item.color, "stroke-dasharray": item.dashed ? "8 5" : "none", "clip-path": "url(#cdfPlotClip)"}));
         });
         if (!allValues.length) cdfChart.appendChild(el("text", {x: 520, y: 180, class: "empty-state"}, "No samples in this window"));
         drawExperimentLabel(cdfChart, plot.bottom - 37);
@@ -235,7 +255,7 @@
 
     function updateLabels() {
         const parameter = parameterInfo();
-        document.getElementById("experimentLabel").textContent = `Location ${state.location} · Config ${state.config}`;
+        document.getElementById("experimentLabel").textContent = `Set ${state.set} · Location ${state.location} · Config ${state.config}`;
         document.getElementById("parameterTitle").textContent = parameter.label;
         document.getElementById("parameterNote").textContent = parameter.unit ? `Displayed in ${parameter.unit}` : "Unitless measurement";
         document.getElementById("windowReadout").textContent = `Window ${state.window[0].toFixed(1)}–${state.window[1].toFixed(1)} s`;
@@ -257,6 +277,52 @@
     function resetWindow() {
         state.window = [0, null];
         render();
+    }
+
+    function applyXLimits() {
+        const minInput = document.getElementById("cdfXMin");
+        const maxInput = document.getElementById("cdfXMax");
+        const min = minInput.value === "" ? null : Number(minInput.value);
+        const max = maxInput.value === "" ? null : Number(maxInput.value);
+        const series = selectedSeries();
+        const values = series.flatMap(item => item.points.filter(point => point[0] >= state.window[0] && point[0] <= state.window[1]).map(point => point[1]));
+        const autoDomain = niceDomain(values);
+        if ((min ?? autoDomain[0]) >= (max ?? autoDomain[1])) {
+            maxInput.setCustomValidity("X max must be greater than X min.");
+            maxInput.reportValidity();
+            return;
+        }
+        maxInput.setCustomValidity("");
+        state.xLimits = [min, max];
+        renderCDF(series);
+    }
+
+    function saveCdfPng() {
+        const clone = cdfChart.cloneNode(true);
+        clone.setAttribute("xmlns", SVG_NS);
+        clone.setAttribute("width", "1000");
+        clone.setAttribute("height", "410");
+        const style = document.createElementNS(SVG_NS, "style");
+        style.textContent = `text{fill:#59635d;font-family:Arial,sans-serif;font-size:12px}.axis-title{fill:#152019;font-size:14px;font-weight:700}.grid-line{stroke:#dedbd2;stroke-dasharray:4 5}.axis-line{stroke:#7a837d}.series-line{fill:none;stroke-width:2.3;stroke-linejoin:round;stroke-linecap:round}.empty-state{fill:#89918c;font-family:Georgia,serif;font-size:18px;text-anchor:middle}`;
+        clone.prepend(style);
+        const blob = new Blob([new XMLSerializer().serializeToString(clone)], {type: "image/svg+xml;charset=utf-8"});
+        const url = URL.createObjectURL(blob);
+        const image = new Image();
+        image.onload = () => {
+            const canvas = document.createElement("canvas");
+            canvas.width = 2000;
+            canvas.height = 820;
+            const context = canvas.getContext("2d");
+            context.fillStyle = "#fffdf8";
+            context.fillRect(0, 0, canvas.width, canvas.height);
+            context.drawImage(image, 0, 0, canvas.width, canvas.height);
+            const link = document.createElement("a");
+            link.download = `cdf-set${state.set}-location${state.location}-config${state.config}.png`;
+            link.href = canvas.toDataURL("image/png");
+            link.click();
+            URL.revokeObjectURL(url);
+        };
+        image.src = url;
     }
 
     function pointerTime(event) {
@@ -295,6 +361,12 @@
         }));
     }
 
+    document.querySelectorAll('input[name="set"]').forEach(input => input.addEventListener("change", event => {
+        state.set = event.target.value;
+        updateLocationAvailability();
+        renderOperationGrid();
+        resetWindow();
+    }));
     document.querySelectorAll('input[name="location"]').forEach(input => input.addEventListener("change", event => {
         state.location = event.target.value;
         renderOperationGrid();
@@ -305,7 +377,13 @@
         renderOperationGrid();
         resetWindow();
     }));
-    parameterSelect.addEventListener("change", event => { state.parameter = event.target.value; resetWindow(); });
+    parameterSelect.addEventListener("change", event => {
+        state.parameter = event.target.value;
+        state.xLimits = [null, null];
+        document.getElementById("cdfXMin").value = "";
+        document.getElementById("cdfXMax").value = "";
+        resetWindow();
+    });
     document.getElementById("selectAll").addEventListener("click", () => {
         state.selected = new Set(operations.flatMap((_, index) => [`C:${index}`, `V:${index}`]));
         renderOperationGrid();
@@ -317,8 +395,18 @@
         resetWindow();
     });
     document.getElementById("resetWindow").addEventListener("click", resetWindow);
+    document.getElementById("applyXLimits").addEventListener("click", applyXLimits);
+    document.getElementById("autoXLimits").addEventListener("click", () => {
+        state.xLimits = [null, null];
+        document.getElementById("cdfXMin").value = "";
+        document.getElementById("cdfXMax").value = "";
+        document.getElementById("cdfXMax").setCustomValidity("");
+        renderCDF(selectedSeries());
+    });
+    document.getElementById("saveCdfPng").addEventListener("click", saveCdfPng);
 
     populateParameters();
+    updateLocationAvailability();
     renderOperationGrid();
     render();
 })();

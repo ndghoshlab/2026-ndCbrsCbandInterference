@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>CBRS/C-band Adjacent Channel Measurements</title>
-    <link rel="stylesheet" href="styles.css?v=1.1.1">
+    <link rel="stylesheet" href="styles.css?v=1.2.0">
     <style>[hidden] { display: none !important; }</style>
 </head>
 <body>
@@ -24,6 +24,12 @@
         <aside class="control-panel">
             <section>
                 <div class="section-heading"><span>01</span><h2>Experiment</h2></div>
+                <label class="field-label">Set</label>
+                <div class="segmented" id="setControl">
+                    <label><input type="radio" name="set" value="A" checked><span>Set A</span></label>
+                    <label><input type="radio" name="set" value="B"><span>Set B</span></label>
+                </div>
+
                 <label class="field-label">Location</label>
                 <div class="segmented" id="locationControl">
                     <label><input type="radio" name="location" value="A" checked><span>A</span></label>
@@ -69,6 +75,13 @@
                     <div><span class="chart-index">A</span><h3>Empirical CDF</h3></div>
                     <p>Computed only from samples inside the selected time window.</p>
                 </div>
+                <div class="chart-tools">
+                    <label>X min <input type="number" id="cdfXMin" step="any" placeholder="Auto"></label>
+                    <label>X max <input type="number" id="cdfXMax" step="any" placeholder="Auto"></label>
+                    <button type="button" id="applyXLimits">Apply limits</button>
+                    <button type="button" id="autoXLimits">Auto</button>
+                    <button type="button" id="saveCdfPng">Save PNG</button>
+                </div>
                 <svg id="cdfChart" class="chart" viewBox="0 0 1000 410" role="img" aria-label="CDF chart"></svg>
             </article>
 
@@ -92,6 +105,12 @@
         <aside class="control-panel">
             <section>
                 <div class="section-heading"><span>01</span><h2>Experiment</h2></div>
+                <label class="field-label">Set</label>
+                <div class="segmented">
+                    <label><input type="radio" name="debugSet" value="A" checked><span>Set A</span></label>
+                    <label><input type="radio" name="debugSet" value="B"><span>Set B</span></label>
+                </div>
+
                 <label class="field-label">Location</label>
                 <div class="segmented">
                     <label><input type="radio" name="debugLocation" value="A" checked><span>A</span></label>
@@ -155,8 +174,8 @@
     </main>
 
     <footer>QualiPoc measurements · n48 collections use the C_ prefix · n77 collections use the V_ prefix</footer>
-    <script src="data.js?v=1.1.1"></script>
-    <script src="app.js?v=1.1.1"></script>
-    <script src="debug.js?v=1.1.1"></script>
+    <script src="data.js?v=1.2.0"></script>
+    <script src="app.js?v=1.2.0"></script>
+    <script src="debug.js?v=1.2.0"></script>
 </body>
 </html>

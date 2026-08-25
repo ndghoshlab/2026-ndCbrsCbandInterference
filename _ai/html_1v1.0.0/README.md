@@ -15,16 +15,20 @@ The dashboard does not read these CSVs at runtime. `data.js` contains a preproce
 
 ## Experiment design
 
-Measurements were collected at three locations using two n48 TDD configurations:
+Measurements are organized into two sets. Set A contains the original measurements at all three locations. Set B contains the newer repeat measurements at Locations B and C; Location A is unavailable and disabled in the dashboard when Set B is selected.
 
-| Collections | Location | n48 configuration |
-|---|---|---|
-| `004–012` | A | A |
-| `013–021` | B | A |
-| `022–030` | C | A |
-| `049–057` | A | B |
-| `058–066` | B | B |
-| `067–075` | C | B |
+| Set | Collections | Location | n48 configuration |
+|---|---|---|---|
+| A | `004–012` | A | A |
+| A | `013–021` | B | A |
+| A | `022–030` | C | A |
+| A | `049–057` | A | B |
+| A | `058–066` | B | B |
+| A | `067–075` | C | B |
+| B | `076–084` | B | B |
+| B | `085–093` | C | B |
+| B | `094–102` | C | A |
+| B | `103–111` | B | A |
 
 Every range contains nine experiments in this fixed order:
 
@@ -80,12 +84,14 @@ For example, collection range `049–057` represents Location A with n48 Config 
 
 ### CDF Explorer
 
-The left control panel selects the location, n48 TDD configuration, parameter, and individual n48/n77 operation measurements. Each checkbox selects one curve; the paired columns reflect the two systems' operations during the same experiment.
+The left control panel selects the measurement set, location, n48 TDD configuration, parameter, and individual n48/n77 operation measurements. Each checkbox selects one curve; the paired columns reflect the two systems' operations during the same experiment. Location A is disabled for Set B because no Set B measurements were collected there.
 
 The dashboard contains two linked plots:
 
 1. **Empirical CDF:** calculated from samples inside the current time window. Its legend reports the median and number of samples for each curve.
 2. **Time domain:** displays each collection using elapsed time from the beginning of that collection. Measurements are approximately 150 seconds long.
+
+The CDF x-axis uses the automatic padded data range by default. Enter an optional minimum, maximum, or both and select **Apply limits** to override it; select **Auto** to restore automatic limits. **Save PNG** downloads the currently rendered CDF with its curves, legend, and experiment label.
 
 The highlighted time-domain window controls the CDF. Drag the middle of the window to move it, drag either edge to change its width, or use **Reset window** to restore the full interval. This makes it possible to exclude erroneous portions of a DL or UL test before comparing distributions.
 
