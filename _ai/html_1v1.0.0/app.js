@@ -187,8 +187,8 @@
         const columnWidth = Math.min(350, Math.max(175, ...labels.map(label => label.length * 6.2 + 44)));
         const boxWidth = columns * columnWidth + 20;
         const boxHeight = rows * 21 + 17;
-        const boxX = plot.right - boxWidth - 10;
-        const boxY = plot.top + 9;
+        const boxX = plot.left + 10;
+        const boxY = plot.top + 45;
         svg.appendChild(el("rect", {x: boxX, y: boxY, width: boxWidth, height: boxHeight, rx: 4, fill: "#fffdf8", stroke: "#bfc4be", "fill-opacity": 0.94}));
 
         series.forEach((item, index) => {

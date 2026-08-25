@@ -189,7 +189,7 @@
         const labels = series.map(labelFunction);
         const width = Math.min(455, Math.max(180, ...labels.map(label => label.length * 7 + 59)));
         const boxHeight = series.length * 22 + 16;
-        const boxX = plot.right - width - 10, boxY = plot.top + 9;
+        const boxX = plot.left + 10, boxY = plot.top + 9;
         svg.appendChild(el("rect", {x: boxX, y: boxY, width, height: boxHeight, rx: 4, fill: "#fffdf8", stroke: "#bfc4be", "fill-opacity": 0.94}));
         series.forEach((item, index) => {
             const y = boxY + 20 + index * 22;

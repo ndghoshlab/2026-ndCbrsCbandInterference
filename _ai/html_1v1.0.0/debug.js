@@ -170,8 +170,8 @@
             return `${item.band} ${item.direction} · median ${formatNumber(median(values))} · #${values.length}`;
         });
         const boxWidth = Math.min(325, Math.max(175, ...labels.map(label => label.length * 7 + 59)));
-        const boxX = plot.right - boxWidth - 10;
-        const boxY = plot.top + 10;
+        const boxX = plot.left + 10;
+        const boxY = plot.top + 48;
         chart.appendChild(el("rect", {x: boxX, y: boxY, width: boxWidth, height: 58, rx: 4, fill: "#fffdf8", stroke: "#bfc4be", "fill-opacity": 0.94}));
         series.forEach((item, index) => {
             const y = boxY + 21 + index * 22;
