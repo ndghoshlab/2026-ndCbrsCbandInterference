@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>CBRS/C-band Adjacent Channel Measurements</title>
-    <link rel="stylesheet" href="styles.css?v=1.3.0">
+    <link rel="stylesheet" href="styles.css?v=1.4.0">
     <style>[hidden] { display: none !important; }</style>
 </head>
 <body>
@@ -20,6 +20,7 @@
         <button type="button" class="tab-button" data-tab="debugTab">PHY (DEBUG)</button>
         <button type="button" class="tab-button" data-tab="spectrumFreqTab">Spectrum (Freq)</button>
         <button type="button" class="tab-button" data-tab="spectrumPowerTab">Spectrum (Power)</button>
+        <button type="button" class="tab-button info-tab" data-tab="infoTab">INFO</button>
     </nav>
 
     <main id="explorerTab" class="tab-page">
@@ -337,12 +338,17 @@
         </section>
     </main>
 
+    <main id="infoTab" class="tab-page info-page" hidden>
+        <article class="info-card" id="infoContent"><p>Loading experiment information…</p></article>
+    </main>
+
     <footer>QualiPoc and Keysight FieldFox measurements · n48 collections use C_ · n77 collections use V_</footer>
-    <script src="experiment-map.js?v=1.3.0"></script>
-    <script src="data.js?v=1.3.0"></script>
-    <script src="spectrum-data.js?v=1.3.0"></script>
-    <script src="app.js?v=1.3.0"></script>
-    <script src="debug.js?v=1.3.0"></script>
-    <script src="spectrum.js?v=1.3.0"></script>
+    <script src="experiment-map.js?v=1.4.0"></script>
+    <script src="data.js?v=1.4.0"></script>
+    <script src="spectrum-data.js?v=1.4.0"></script>
+    <script src="app.js?v=1.4.0"></script>
+    <script src="debug.js?v=1.4.0"></script>
+    <script src="spectrum.js?v=1.4.0"></script>
+    <script src="info.js?v=1.4.0"></script>
 </body>
 </html>

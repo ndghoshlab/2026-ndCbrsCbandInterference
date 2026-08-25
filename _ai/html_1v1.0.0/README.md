@@ -84,6 +84,8 @@ For example, collection range `049–057` represents Location A with n48 Config 
 
 ## Dashboard behavior
 
+The rightmost **INFO** tab is rendered from the repository-root `INFO.md`. Edit that Markdown file to update the experiment explanation without changing the dashboard HTML.
+
 ### PHY (CDF)
 
 The left control panel selects the measurement set, location, n48 TDD configuration, parameter, and individual n48/n77 operation measurements. Each checkbox selects one curve; the paired columns reflect the two systems' operations during the same experiment. Location A is disabled for Set B because no Set B measurements were collected there.
