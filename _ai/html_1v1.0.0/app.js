@@ -158,12 +158,12 @@
         ticks(...xDomain).forEach(value => {
             const x = xScale(value);
             svg.appendChild(el("line", {x1: x, x2: x, y1: plot.top, y2: bottom, class: "grid-line"}));
-            svg.appendChild(el("text", {x, y: bottom + 22, "text-anchor": "middle"}, formatNumber(value)));
+            svg.appendChild(el("text", {x, y: bottom + 22, class: "axis-value", "text-anchor": "middle"}, formatNumber(value)));
         });
         ticks(...yDomain, 5).forEach(value => {
             const y = yScale(value);
             svg.appendChild(el("line", {x1: plot.left, x2: plot.right, y1: y, y2: y, class: "grid-line"}));
-            svg.appendChild(el("text", {x: plot.left - 12, y: y + 4, "text-anchor": "end"}, formatNumber(value)));
+            svg.appendChild(el("text", {x: plot.left - 12, y: y + 4, class: "axis-value", "text-anchor": "end"}, formatNumber(value)));
         });
         svg.appendChild(el("line", {x1: plot.left, x2: plot.right, y1: bottom, y2: bottom, class: "axis-line"}));
         svg.appendChild(el("line", {x1: plot.left, x2: plot.left, y1: plot.top, y2: bottom, class: "axis-line"}));
@@ -192,9 +192,9 @@
             const values = selectedValues(item);
             return `${item.label} · median ${formatNumber(median(values))} · #${values.length}`;
         });
-        const columnWidth = Math.min(350, Math.max(175, ...labels.map(label => label.length * 6.2 + 44)));
+        const columnWidth = Math.min(420, Math.max(200, ...labels.map(label => label.length * 7.5 + 48)));
         const boxWidth = columns * columnWidth + 20;
-        const boxHeight = rows * 21 + 17;
+        const boxHeight = rows * 26 + 18;
         const boxX = plot.left + 10;
         const boxY = plot.top + 45;
         svg.appendChild(el("rect", {x: boxX, y: boxY, width: boxWidth, height: boxHeight, rx: 4, fill: "#fffdf8", stroke: "#bfc4be", "fill-opacity": 0.94}));
@@ -203,9 +203,9 @@
             const column = Math.floor(index / 9);
             const row = index % 9;
             const x = boxX + 12 + column * columnWidth;
-            const y = boxY + 19 + row * 21;
+            const y = boxY + 22 + row * 26;
             svg.appendChild(el("line", {x1: x, x2: x + 24, y1: y - 4, y2: y - 4, stroke: item.color, "stroke-width": 3, "stroke-dasharray": item.dashed ? "7 4" : "none"}));
-            svg.appendChild(el("text", {x: x + 32, y, fill: "#28322c", "font-size": 11}, labels[index]));
+            svg.appendChild(el("text", {x: x + 32, y, class: "legend-text", fill: "#28322c"}, labels[index]));
         });
     }
 
@@ -333,7 +333,7 @@
         clone.setAttribute("width", pngWidth);
         clone.setAttribute("height", pngHeight);
         const style = document.createElementNS(SVG_NS, "style");
-        style.textContent = `text{fill:#59635d;font-family:Arial,sans-serif;font-size:12px}.axis-title{fill:#152019;font-size:14px;font-weight:700}.grid-line{stroke:#dedbd2;stroke-dasharray:4 5}.axis-line{stroke:#7a837d}.series-line{fill:none;stroke-width:2.3;stroke-linejoin:round;stroke-linecap:round}.empty-state{fill:#89918c;font-family:Georgia,serif;font-size:18px;text-anchor:middle}`;
+        style.textContent = `text{fill:#59635d;font-family:Arial,sans-serif;font-size:15px}.axis-title{fill:#152019;font-size:18px;font-weight:700}.grid-line{stroke:#dedbd2;stroke-dasharray:4 5}.axis-line{stroke:#7a837d}.series-line{fill:none;stroke-width:2.3;stroke-linejoin:round;stroke-linecap:round}.empty-state{fill:#89918c;font-family:Georgia,serif;font-size:20px;text-anchor:middle}`;
         clone.prepend(style);
         const blob = new Blob([new XMLSerializer().serializeToString(clone)], {type: "image/svg+xml;charset=utf-8"});
         const url = URL.createObjectURL(blob);

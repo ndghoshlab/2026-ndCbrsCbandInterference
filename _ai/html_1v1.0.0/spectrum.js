@@ -148,7 +148,7 @@
         ticks(...yDomain, 5).forEach(value => {
             const y = yScale(value);
             svg.appendChild(el("line", {x1: plot.left, x2: plot.right, y1: y, y2: y, class: "grid-line"}));
-            svg.appendChild(el("text", {x: plot.left - 12, y: y + 4, "text-anchor": "end"}, formatNumber(value)));
+            svg.appendChild(el("text", {x: plot.left - 12, y: y + 4, class: "axis-value", "text-anchor": "end"}, formatNumber(value)));
         });
         svg.appendChild(el("line", {x1: plot.left, x2: plot.left, y1: plot.top, y2: plot.bottom, class: "axis-line"}));
         svg.appendChild(el("text", {x: 18, y: (plot.top + plot.bottom) / 2, class: "axis-title", "text-anchor": "middle", transform: `rotate(-90 18 ${(plot.top + plot.bottom) / 2})`}, yLabel));
@@ -160,7 +160,7 @@
         [3650, 3660, 3700, 3800, 3810].forEach(value => {
             const x = xScale(value);
             svg.appendChild(el("line", {x1: x, x2: x, y1: plot.top, y2: plot.bottom, class: [3660, 3700, 3800].includes(value) ? "band-edge" : "grid-line"}));
-            svg.appendChild(el("text", {x, y: plot.bottom + 22, "text-anchor": "middle"}, value));
+            svg.appendChild(el("text", {x, y: plot.bottom + 22, class: "axis-value", "text-anchor": "middle"}, value));
         });
         svg.appendChild(el("line", {x1: plot.left, x2: plot.right, y1: plot.bottom, y2: plot.bottom, class: "axis-line"}));
         svg.appendChild(el("text", {x: (plot.left + plot.right) / 2, y: plot.bottom + 58, class: "axis-title", "text-anchor": "middle"}, "Frequency [MHz]"));
@@ -172,7 +172,7 @@
         ticks(...xDomain).forEach(value => {
             const x = xScale(value);
             svg.appendChild(el("line", {x1: x, x2: x, y1: plot.top, y2: plot.bottom, class: "grid-line"}));
-            svg.appendChild(el("text", {x, y: plot.bottom + 22, "text-anchor": "middle"}, formatNumber(value)));
+            svg.appendChild(el("text", {x, y: plot.bottom + 22, class: "axis-value", "text-anchor": "middle"}, formatNumber(value)));
         });
         svg.appendChild(el("line", {x1: plot.left, x2: plot.right, y1: plot.bottom, y2: plot.bottom, class: "axis-line"}));
         svg.appendChild(el("text", {x: (plot.left + plot.right) / 2, y: plot.bottom + 58, class: "axis-title", "text-anchor": "middle"}, xLabel));
@@ -187,14 +187,17 @@
     function drawLegend(svg, series, labelFunction) {
         if (!series.length) return;
         const labels = series.map(labelFunction);
-        const width = Math.min(455, Math.max(180, ...labels.map(label => label.length * 7 + 59)));
-        const boxHeight = series.length * 22 + 16;
-        const boxX = plot.left + 10, boxY = plot.top + 9;
+        const isCdf = svg === powerChart;
+        const width = Math.min(isCdf ? 520 : 455, Math.max(isCdf ? 210 : 180, ...labels.map(label => label.length * (isCdf ? 7.5 : 7) + 59)));
+        const rowHeight = isCdf ? 27 : 22;
+        const boxHeight = series.length * rowHeight + (isCdf ? 18 : 16);
+        const boxX = isCdf ? plot.right - width - 10 : plot.left + 10;
+        const boxY = isCdf ? plot.bottom - boxHeight - 10 : plot.top + 9;
         svg.appendChild(el("rect", {x: boxX, y: boxY, width, height: boxHeight, rx: 4, fill: "#fffdf8", stroke: "#bfc4be", "fill-opacity": 0.94}));
         series.forEach((item, index) => {
-            const y = boxY + 20 + index * 22;
+            const y = boxY + (isCdf ? 23 : 20) + index * rowHeight;
             svg.appendChild(el("line", {x1: boxX + 12, x2: boxX + 38, y1: y - 4, y2: y - 4, stroke: item.color, "stroke-width": 3}));
-            svg.appendChild(el("text", {x: boxX + 47, y}, labels[index]));
+            svg.appendChild(el("text", {x: boxX + 47, y, class: "legend-text"}, labels[index]));
         });
     }
 
@@ -313,7 +316,8 @@
         clone.setAttribute("width", pngWidth);
         clone.setAttribute("height", pngHeight);
         const style = document.createElementNS(SVG_NS, "style");
-        style.textContent = `text{fill:#59635d;font-family:Arial,sans-serif;font-size:12px}.axis-title{fill:#152019;font-size:14px;font-weight:700}.grid-line{stroke:#dedbd2;stroke-dasharray:4 5}.band-edge{stroke:#787f7a;stroke-width:1.4}.axis-line{stroke:#7a837d}.series-line{fill:none;stroke-width:2.3;stroke-linejoin:round;stroke-linecap:round}.empty-state{fill:#89918c;font-family:Georgia,serif;font-size:18px;text-anchor:middle}`;
+        const fontSize = widthId ? 15 : 12, axisTitleSize = widthId ? 18 : 14, emptySize = widthId ? 20 : 18;
+        style.textContent = `text{fill:#59635d;font-family:Arial,sans-serif;font-size:${fontSize}px}.axis-title{fill:#152019;font-size:${axisTitleSize}px;font-weight:700}.grid-line{stroke:#dedbd2;stroke-dasharray:4 5}.band-edge{stroke:#787f7a;stroke-width:1.4}.axis-line{stroke:#7a837d}.series-line{fill:none;stroke-width:2.3;stroke-linejoin:round;stroke-linecap:round}.empty-state{fill:#89918c;font-family:Georgia,serif;font-size:${emptySize}px;text-anchor:middle}`;
         clone.prepend(style);
         const blob = new Blob([new XMLSerializer().serializeToString(clone)], {type: "image/svg+xml;charset=utf-8"});
         const url = URL.createObjectURL(blob), image = new Image();

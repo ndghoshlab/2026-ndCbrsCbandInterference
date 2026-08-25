@@ -95,15 +95,15 @@ The dashboard contains two linked plots:
 1. **Empirical CDF:** calculated from samples inside one selected time window or the union of two windows. Its legend reports the median and number of samples for each curve.
 2. **Time domain:** displays each collection using elapsed time from the beginning of that collection. Measurements are approximately 150 seconds long, and both selection windows can be moved or resized independently.
 
-The CDF x-axis uses the automatic padded data range by default. Enter an optional minimum, maximum, or both and select **Apply limits** to override it; select **Auto** to restore automatic limits. **PNG width** controls the exported image width in pixels and defaults to 1200. **Save PNG** downloads the currently rendered CDF with its curves, legend, and experiment label.
+The CDF x-axis uses the automatic padded data range by default. Enter an optional minimum, maximum, or both and select **Apply limits** to override it; select **Auto** to restore automatic limits. **PNG width** controls the exported image width in pixels and defaults to 1200; height scales proportionally. **Save PNG** downloads the currently rendered CDF with its curves, legend, and experiment label.
 
 The highlighted time-domain window controls the CDF. Use **Add second window** to select two separate intervals, **Remove second** to return to one, or **Reset** to restore the full interval. Overlapping windows are treated as a union, so samples are not counted twice. This makes it possible to exclude erroneous portions of a DL or UL test before comparing distributions.
 
 Selected curves cycle through five distinguishable colors. n77 curves are also dashed to help distinguish them from n48 curves when colors repeat.
 
-### PHY (DEBUG)
+### PHY (DEBUG1)
 
-The PHY (DEBUG) tab compares the two phones for the four experiments in which both systems were active simultaneously:
+The PHY (DEBUG1) tab compares the two phones for the four experiments in which both systems were active simultaneously:
 
 - n48 DL : n77 UL
 - n48 UL : n77 DL
@@ -112,7 +112,13 @@ The PHY (DEBUG) tab compares the two phones for the four experiments in which bo
 
 The two curves are aligned using their original measurement timestamps and displayed as elapsed time from the earliest selected series. For mixed-direction experiments, UL is plotted against the left y-axis and DL against the right y-axis. Same-direction experiments share one y-axis.
 
-The PHY (DEBUG) tab provides direction-aware comparisons for throughput, average RBs per slot, and total RBs. It automatically reads the PUSCH column for UL and the corresponding PDSCH column for DL. PUSCH Tx Power is read from `nr_pusch.csv` for both DL and UL experiments. SS-RSRP, SS-RSRQ, and SS-SINR are read from `nr_radio.csv` and share one axis.
+The PHY (DEBUG1) tab provides direction-aware comparisons for throughput, average RBs per slot, and total RBs. It automatically reads the PUSCH column for UL and the corresponding PDSCH column for DL. PUSCH Tx Power is read from `nr_pusch.csv` for both DL and UL experiments. SS-RSRP, SS-RSRQ, and SS-SINR are read from `nr_radio.csv` and share one axis.
+
+### PHY (DEBUG2)
+
+PHY (DEBUG2) builds pooled empirical CDF curves. Each removable curve entry selects n48 or n77 plus any sets, locations, TDD configurations, and operation pairs. Samples from all matching collections are combined into one curve; unavailable combinations are ignored. The legend reports the median and sample count.
+
+The parameter is shared by all entries and can be selected from the Radio, PDSCH, or PUSCH measurements. Curve labels are optional, five colors cycle across entries, x-axis limits can be set manually, and PNG width is adjustable with proportional scaling. Verizon radio data remains restricted to the MCG PCell through the preprocessing step.
 
 ### Spectrum (Freq)
 
@@ -122,7 +128,7 @@ The x-axis explicitly marks 3650, 3660, 3700, 3800, and 3810 MHz. Manual y-axis 
 
 ### Spectrum (Power)
 
-This tab calculates an empirical CDF from one estimated band-power value per swept trace for either n48 (3660–3700 MHz) or n77 (3700–3800 MHz). The selected percentile interval is shown as a transparent vertical range, while the selected mean or median is shown as a vertical summary marker and in the legend. Manual x-axis limits and a 600–3000 px PNG export width are available.
+This tab calculates an empirical CDF from one estimated band-power value per swept trace for either n48 (3660–3700 MHz) or n77 (3700–3800 MHz). The selected percentile interval is shown as a transparent vertical range, while the selected mean or median is shown as a vertical summary marker and in the legend. Manual x-axis limits and an adjustable-width, proportionally scaled PNG export are available.
 
 The preprocessing converts every bucket from dBm to mW and approximates PSD by dividing by the nominal 1 MHz RBW. It then integrates across frequency using trapezoidal integration and converts the result back to dBm:
 
