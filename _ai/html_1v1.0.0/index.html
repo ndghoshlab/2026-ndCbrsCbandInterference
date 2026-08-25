@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>CBRS/C-band Adjacent Channel Measurements</title>
-    <link rel="stylesheet" href="styles.css?v=1.5.2">
+    <link rel="stylesheet" href="styles.css?v=1.5.3">
     <style>[hidden] { display: none !important; }</style>
     <script>window.MathJax = {svg: {fontCache: "global"}};</script>
     <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
@@ -85,7 +85,7 @@
                     <label>X max <input type="number" id="cdfXMax" step="any" placeholder="Auto"></label>
                     <button type="button" id="applyXLimits">Apply limits</button>
                     <button type="button" id="autoXLimits">Auto</button>
-                    <label class="png-width-control">PNG width (px) <input type="number" id="cdfPngWidth" value="1200" min="600" max="3000" step="100"></label>
+                    <label>PNG width (px) <input type="number" id="cdfPngWidth" value="1200" min="600" max="3000" step="100"></label>
                     <button type="button" id="saveCdfPng">Save PNG</button>
                 </div>
                 <svg id="cdfChart" class="chart" viewBox="0 0 1000 410" role="img" aria-label="CDF chart"></svg>
@@ -336,7 +336,7 @@
                     <label>X max <input type="number" id="powerXMax" step="any" placeholder="Auto"></label>
                     <button type="button" id="applyPowerXLimits">Apply limits</button>
                     <button type="button" id="autoPowerXLimits">Auto</button>
-                    <label class="png-width-control">PNG width (px) <input type="number" id="powerPngWidth" value="1200" min="600" max="3000" step="100"></label>
+                    <label>PNG width (px) <input type="number" id="powerPngWidth" value="1200" min="600" max="3000" step="100"></label>
                     <button type="button" id="savePowerPng">Save PNG</button>
                 </div>
                 <svg id="spectrumPowerChart" class="chart" viewBox="0 0 1000 430" role="img" aria-label="Band-power CDF chart"></svg>
