@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>CBRS/C-band Adjacent Channel Measurements</title>
-    <link rel="stylesheet" href="styles.css?v=1.2.0">
+    <link rel="stylesheet" href="styles.css?v=1.3.0">
     <style>[hidden] { display: none !important; }</style>
 </head>
 <body>
@@ -16,8 +16,10 @@
     </header>
 
     <nav class="tab-nav" aria-label="Dashboard views">
-        <button type="button" class="tab-button active" data-tab="explorerTab">CDF explorer</button>
-        <button type="button" class="tab-button" data-tab="debugTab">Debug</button>
+        <button type="button" class="tab-button active" data-tab="explorerTab">PHY CDF</button>
+        <button type="button" class="tab-button" data-tab="debugTab">PHY Debug</button>
+        <button type="button" class="tab-button" data-tab="spectrumFreqTab">Spectrum (Freq)</button>
+        <button type="button" class="tab-button" data-tab="spectrumPowerTab">Spectrum (Power)</button>
     </nav>
 
     <main id="explorerTab" class="tab-page">
@@ -173,9 +175,174 @@
         </section>
     </main>
 
-    <footer>QualiPoc measurements · n48 collections use the C_ prefix · n77 collections use the V_ prefix</footer>
-    <script src="data.js?v=1.2.0"></script>
-    <script src="app.js?v=1.2.2"></script>
-    <script src="debug.js?v=1.2.2"></script>
+    <main id="spectrumFreqTab" class="tab-page" hidden>
+        <aside class="control-panel">
+            <section>
+                <div class="section-heading"><span>01</span><h2>Experiment</h2></div>
+                <label class="field-label">Set</label>
+                <div class="segmented">
+                    <label><input type="radio" name="freqSet" value="A"><span>Set A</span></label>
+                    <label><input type="radio" name="freqSet" value="B" checked><span>Set B</span></label>
+                </div>
+
+                <label class="field-label">Location</label>
+                <div class="segmented">
+                    <label><input type="radio" name="freqLocation" value="A"><span>A</span></label>
+                    <label><input type="radio" name="freqLocation" value="B" checked><span>B</span></label>
+                    <label><input type="radio" name="freqLocation" value="C"><span>C</span></label>
+                </div>
+
+                <label class="field-label">n48 TDD configuration</label>
+                <div class="segmented">
+                    <label><input type="radio" name="freqConfig" value="A"><span>Config A</span></label>
+                    <label><input type="radio" name="freqConfig" value="B" checked><span>Config B</span></label>
+                </div>
+            </section>
+
+            <section>
+                <div class="section-heading"><span>02</span><h2>Spectrum statistic</h2></div>
+                <label class="field-label">Central curve</label>
+                <div class="segmented">
+                    <label><input type="radio" name="freqCenter" value="median" checked><span>Median</span></label>
+                    <label><input type="radio" name="freqCenter" value="mean"><span>Mean</span></label>
+                </div>
+
+                <label class="field-label">Transparent envelope</label>
+                <div class="choice-grid">
+                    <label><input type="radio" name="freqEnvelope" value="10-90" checked><span>10–90%</span></label>
+                    <label><input type="radio" name="freqEnvelope" value="5-95"><span>5–95%</span></label>
+                    <label><input type="radio" name="freqEnvelope" value="1-99"><span>1–99%</span></label>
+                    <label><input type="radio" name="freqEnvelope" value="0-100"><span>Min–max</span></label>
+                </div>
+            </section>
+
+            <section class="operation-section">
+                <div class="section-heading"><span>03</span><h2>Operations</h2></div>
+                <div class="operation-actions">
+                    <button type="button" id="freqSelectAll">Select all</button>
+                    <button type="button" id="freqClearAll">Clear</button>
+                </div>
+                <div class="operation-grid operation-grid-header"><span>n48</span><span>n77</span></div>
+                <div id="freqOperationGrid"></div>
+            </section>
+        </aside>
+
+        <section class="workspace">
+            <div class="workspace-head">
+                <div>
+                    <p class="eyebrow" id="freqExperimentLabel">Set B · Location B · Config B</p>
+                    <h2>Percentile spectrum</h2>
+                </div>
+                <div class="window-readout" id="freqDurationLabel">60.0 s recording</div>
+            </div>
+
+            <article class="chart-card">
+                <div class="chart-heading">
+                    <div><span class="chart-index">S</span><h3>Frequency-domain spectrum</h3></div>
+                    <p>Each trace is swept; frequencies within a trace are not simultaneous.</p>
+                </div>
+                <div class="chart-tools">
+                    <label>Y min <input type="number" id="freqYMin" step="any" placeholder="Auto"></label>
+                    <label>Y max <input type="number" id="freqYMax" step="any" placeholder="Auto"></label>
+                    <button type="button" id="applyFreqYLimits">Apply limits</button>
+                    <button type="button" id="autoFreqYLimits">Auto</button>
+                    <button type="button" id="saveFreqPng">Save PNG</button>
+                </div>
+                <svg id="spectrumFreqChart" class="chart" viewBox="0 0 1000 430" role="img" aria-label="Percentile spectrum chart"></svg>
+            </article>
+        </section>
+    </main>
+
+    <main id="spectrumPowerTab" class="tab-page" hidden>
+        <aside class="control-panel">
+            <section>
+                <div class="section-heading"><span>01</span><h2>Experiment</h2></div>
+                <label class="field-label">Set</label>
+                <div class="segmented">
+                    <label><input type="radio" name="powerSet" value="A"><span>Set A</span></label>
+                    <label><input type="radio" name="powerSet" value="B" checked><span>Set B</span></label>
+                </div>
+
+                <label class="field-label">Location</label>
+                <div class="segmented">
+                    <label><input type="radio" name="powerLocation" value="A"><span>A</span></label>
+                    <label><input type="radio" name="powerLocation" value="B" checked><span>B</span></label>
+                    <label><input type="radio" name="powerLocation" value="C"><span>C</span></label>
+                </div>
+
+                <label class="field-label">n48 TDD configuration</label>
+                <div class="segmented">
+                    <label><input type="radio" name="powerConfig" value="A"><span>Config A</span></label>
+                    <label><input type="radio" name="powerConfig" value="B" checked><span>Config B</span></label>
+                </div>
+            </section>
+
+            <section>
+                <div class="section-heading"><span>02</span><h2>Band statistics</h2></div>
+                <label class="field-label">Band</label>
+                <div class="segmented">
+                    <label><input type="radio" name="powerBand" value="n48" checked><span>n48</span></label>
+                    <label><input type="radio" name="powerBand" value="n77"><span>n77</span></label>
+                </div>
+
+                <label class="field-label">Summary statistic</label>
+                <div class="segmented">
+                    <label><input type="radio" name="powerSummary" value="median" checked><span>Median</span></label>
+                    <label><input type="radio" name="powerSummary" value="mean"><span>Mean</span></label>
+                </div>
+
+                <label class="field-label">Percentile interval</label>
+                <div class="choice-grid">
+                    <label><input type="radio" name="powerInterval" value="10-90" checked><span>10–90%</span></label>
+                    <label><input type="radio" name="powerInterval" value="5-95"><span>5–95%</span></label>
+                    <label><input type="radio" name="powerInterval" value="1-99"><span>1–99%</span></label>
+                    <label><input type="radio" name="powerInterval" value="0-100"><span>Min–max</span></label>
+                </div>
+            </section>
+
+            <section class="operation-section">
+                <div class="section-heading"><span>03</span><h2>Operations</h2></div>
+                <div class="operation-actions">
+                    <button type="button" id="powerSelectAll">Select all</button>
+                    <button type="button" id="powerClearAll">Clear</button>
+                </div>
+                <div class="operation-grid operation-grid-header"><span>n48</span><span>n77</span></div>
+                <div id="powerOperationGrid"></div>
+            </section>
+        </aside>
+
+        <section class="workspace">
+            <div class="workspace-head">
+                <div>
+                    <p class="eyebrow" id="powerExperimentLabel">Set B · Location B · Config B</p>
+                    <h2 id="powerBandTitle">n48 band-power CDF</h2>
+                </div>
+                <div class="window-readout" id="powerDurationLabel">60.0 s recording</div>
+            </div>
+
+            <article class="chart-card">
+                <div class="chart-heading">
+                    <div><span class="chart-index">P</span><h3>Sweep-integrated band power</h3></div>
+                    <p>Estimated from positive-peak swept traces using nominal 1 MHz ENBW.</p>
+                </div>
+                <div class="chart-tools">
+                    <label>X min <input type="number" id="powerXMin" step="any" placeholder="Auto"></label>
+                    <label>X max <input type="number" id="powerXMax" step="any" placeholder="Auto"></label>
+                    <button type="button" id="applyPowerXLimits">Apply limits</button>
+                    <button type="button" id="autoPowerXLimits">Auto</button>
+                    <button type="button" id="savePowerPng">Save PNG</button>
+                </div>
+                <svg id="spectrumPowerChart" class="chart" viewBox="0 0 1000 430" role="img" aria-label="Band-power CDF chart"></svg>
+            </article>
+        </section>
+    </main>
+
+    <footer>QualiPoc and Keysight FieldFox measurements · n48 collections use C_ · n77 collections use V_</footer>
+    <script src="experiment-map.js?v=1.3.0"></script>
+    <script src="data.js?v=1.3.0"></script>
+    <script src="spectrum-data.js?v=1.3.0"></script>
+    <script src="app.js?v=1.3.0"></script>
+    <script src="debug.js?v=1.3.0"></script>
+    <script src="spectrum.js?v=1.3.0"></script>
 </body>
 </html>

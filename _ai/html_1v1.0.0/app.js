@@ -2,21 +2,15 @@
     "use strict";
 
     const DATA = window.CBRS_DATA;
+    const MAP = window.EXPERIMENT_MAP;
     if (!DATA) {
         document.body.innerHTML = '<p style="padding:2rem;font-family:sans-serif">Missing data.js. Run <code>python build_data.py</code> inside the _ai folder.</p>';
         return;
     }
 
     const SVG_NS = "http://www.w3.org/2000/svg";
-    const experimentStarts = {
-        A: {A: {A: 4, B: 49}, B: {A: 13, B: 58}, C: {A: 22, B: 67}},
-        B: {B: {A: 103, B: 76}, C: {A: 94, B: 85}}
-    };
-    const operations = [
-        {n48: "UL", n77: "idle"}, {n48: "DL", n77: "idle"}, {n48: "idle", n77: "UL"},
-        {n48: "idle", n77: "DL"}, {n48: "DL", n77: "UL"}, {n48: "UL", n77: "DL"},
-        {n48: "DL", n77: "DL"}, {n48: "UL", n77: "UL"}, {n48: "idle", n77: "idle"}
-    ];
+    const operations = MAP.operations;
+    const experiments = MAP.experiments.filter(experiment => experiment.qualipoc);
     const colors = ["#0072B2", "#D55E00", "#009E73", "#CC79A7", "#E69F00"];
     const state = {set: "A", location: "A", config: "A", parameter: "radio|SS-RSRP", selected: new Set(["C:0", "V:0"]), window: [0, null], maxTime: 150, xLimits: [null, null]};
     const plot = {left: 74, right: 965, top: 26, bottom: 342};
@@ -50,16 +44,20 @@
     }
 
     function collectionNumber(index) {
-        return String(experimentStarts[state.set][state.location][state.config] + index).padStart(3, "0");
+        const experiment = experiments.find(item => item.set === state.set && item.location === state.location && item.config === state.config);
+        return String(experiment.start + index).padStart(3, "0");
     }
 
-    function updateLocationAvailability() {
-        const locationA = document.querySelector('input[name="location"][value="A"]');
-        locationA.disabled = state.set === "B";
-        if (locationA.disabled && state.location === "A") {
-            state.location = "B";
-            document.querySelector('input[name="location"][value="B"]').checked = true;
-        }
+    function updateExperimentAvailability() {
+        const updateGroup = (name, stateKey, values) => {
+            const inputs = [...document.querySelectorAll(`input[name="${name}"]`)];
+            inputs.forEach(input => input.disabled = !values.includes(input.value));
+            if (!values.includes(state[stateKey])) state[stateKey] = values[0];
+            inputs.forEach(input => input.checked = input.value === state[stateKey]);
+        };
+        updateGroup("set", "set", [...new Set(experiments.map(item => item.set))]);
+        updateGroup("location", "location", [...new Set(experiments.filter(item => item.set === state.set).map(item => item.location))]);
+        updateGroup("config", "config", [...new Set(experiments.filter(item => item.set === state.set && item.location === state.location).map(item => item.config))]);
     }
 
     function renderOperationGrid() {
@@ -363,12 +361,13 @@
 
     document.querySelectorAll('input[name="set"]').forEach(input => input.addEventListener("change", event => {
         state.set = event.target.value;
-        updateLocationAvailability();
+        updateExperimentAvailability();
         renderOperationGrid();
         resetWindow();
     }));
     document.querySelectorAll('input[name="location"]').forEach(input => input.addEventListener("change", event => {
         state.location = event.target.value;
+        updateExperimentAvailability();
         renderOperationGrid();
         resetWindow();
     }));
@@ -406,7 +405,7 @@
     document.getElementById("saveCdfPng").addEventListener("click", saveCdfPng);
 
     populateParameters();
-    updateLocationAvailability();
+    updateExperimentAvailability();
     renderOperationGrid();
     render();
 })();

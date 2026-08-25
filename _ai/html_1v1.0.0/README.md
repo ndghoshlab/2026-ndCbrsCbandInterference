@@ -11,7 +11,7 @@ The source measurements were collected with QualiPoc and are stored in three CSV
 - `nr_pdsch.csv`
 - `nr_pusch.csv`
 
-The dashboard does not read these CSVs at runtime. `data.js` contains a preprocessed copy of the measurements required by the dashboard, so the hosted page is entirely static.
+Spectrum-analyzer CSVs are stored in `_data/specan` for Set B collections `076–111`. The dashboard does not read any CSV at runtime. `data.js` contains the required QualiPoc measurements and `spectrum-data.js` contains precomputed spectrum statistics and band-power samples, so the hosted page is entirely static.
 
 ## Experiment design
 
@@ -29,6 +29,8 @@ Measurements are organized into two sets. Set A contains the original measuremen
 | B | `085–093` | C | B |
 | B | `094–102` | C | A |
 | B | `103–111` | B | A |
+
+`experiment-map.js` is the central mapping for collection range, set, location, configuration, data-source availability, and operation order. All tabs use this map to enable or disable filter choices; availability is not hardcoded into the HTML.
 
 Every range contains nine experiments in this fixed order:
 
@@ -82,7 +84,7 @@ For example, collection range `049–057` represents Location A with n48 Config 
 
 ## Dashboard behavior
 
-### CDF Explorer
+### PHY CDF
 
 The left control panel selects the measurement set, location, n48 TDD configuration, parameter, and individual n48/n77 operation measurements. Each checkbox selects one curve; the paired columns reflect the two systems' operations during the same experiment. Location A is disabled for Set B because no Set B measurements were collected there.
 
@@ -97,9 +99,9 @@ The highlighted time-domain window controls the CDF. Drag the middle of the wind
 
 Selected curves cycle through five distinguishable colors. n77 curves are also dashed to help distinguish them from n48 curves when colors repeat.
 
-### Debug
+### PHY Debug
 
-The Debug tab compares the two phones for the four experiments in which both systems were active simultaneously:
+The PHY Debug tab compares the two phones for the four experiments in which both systems were active simultaneously:
 
 - n48 DL : n77 UL
 - n48 UL : n77 DL
@@ -108,7 +110,27 @@ The Debug tab compares the two phones for the four experiments in which both sys
 
 The two curves are aligned using their original measurement timestamps and displayed as elapsed time from the earliest selected series. For mixed-direction experiments, UL is plotted against the left y-axis and DL against the right y-axis. Same-direction experiments share one y-axis.
 
-The Debug tab provides direction-aware comparisons for throughput, average RBs per slot, and total RBs. It automatically reads the PUSCH column for UL and the corresponding PDSCH column for DL. PUSCH Tx Power is read from `nr_pusch.csv` for both DL and UL experiments. SS-RSRP, SS-RSRQ, and SS-SINR are read from `nr_radio.csv` and share one axis.
+The PHY Debug tab provides direction-aware comparisons for throughput, average RBs per slot, and total RBs. It automatically reads the PUSCH column for UL and the corresponding PDSCH column for DL. PUSCH Tx Power is read from `nr_pusch.csv` for both DL and UL experiments. SS-RSRP, SS-RSRQ, and SS-SINR are read from `nr_radio.csv` and share one axis.
+
+### Spectrum (Freq)
+
+This tab is available only for the four Set B ranges. Filter availability is derived from `experiment-map.js`, so Set A and Location A are automatically disabled. Each selected operation plots a frequency-domain median or linear-power mean with one of four transparent envelopes: 10th–90th, 5th–95th, 1st–99th, or minimum–maximum.
+
+The x-axis explicitly marks 3650, 3660, 3700, 3800, and 3810 MHz. Manual y-axis limits can override the automatic range, and the currently rendered chart can be downloaded as PNG. The analyzer files contain 401 points at 400 kHz spacing with 1 MHz RBW, so adjacent frequency points overlap and are correlated. All 36 files contain approximately 60 seconds and 1,379–1,391 swept traces.
+
+### Spectrum (Power)
+
+This tab calculates an empirical CDF from one estimated band-power value per swept trace for either n48 (3660–3700 MHz) or n77 (3700–3800 MHz). The selected percentile interval is shown as a transparent vertical range, while the selected mean or median is shown as a vertical summary marker and in the legend. Manual x-axis limits and PNG download are available.
+
+The preprocessing converts every bucket from dBm to mW and approximates PSD by dividing by the nominal 1 MHz RBW. It then integrates across frequency using trapezoidal integration and converts the result back to dBm:
+
+```text
+p_i [mW] = 10^(P_i [dBm] / 10)
+P_band [mW] ≈ integral(p(f) / RBW, df)
+P_band [dBm] = 10 log10(P_band [mW])
+```
+
+Because the analyzer used positive-peak detection and swept different frequencies at different times, the result is labeled an estimated sweep-integrated band power, not instantaneous or standards-compliant channel power.
 
 ## Files required for hosting
 
@@ -117,10 +139,13 @@ Only these files are needed to run the published dashboard:
 - `index.html`
 - `app.js`
 - `debug.js`
+- `spectrum.js`
 - `styles.css`
 - `data.js`
+- `spectrum-data.js`
+- `experiment-map.js`
 
-`README.md` documents the project. `build_data.py` is a local utility and is not required by the hosted page.
+`README.md` documents the project. `build_data.py` and `build_spectrum_data.py` are local utilities and are not required by the hosted page.
 
 ## Running locally
 
@@ -135,6 +160,14 @@ python build_data.py
 ```
 
 The script expects the original CSVs at the repository-level `_data` directory and rewrites `data.js`. Rebuilding is only necessary when the source CSVs or preprocessing rules change.
+
+To rebuild the spectrum bundle from `_data/specan`:
+
+```bash
+python build_spectrum_data.py
+```
+
+Both build scripts read collection ranges and availability from `experiment-map.js`.
 
 ## GitHub Pages
 

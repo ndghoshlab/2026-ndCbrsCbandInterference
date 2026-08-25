@@ -2,17 +2,10 @@
     "use strict";
 
     const DATA = window.CBRS_DATA;
+    const MAP = window.EXPERIMENT_MAP;
     const SVG_NS = "http://www.w3.org/2000/svg";
-    const experimentStarts = {
-        A: {A: {A: 4, B: 49}, B: {A: 13, B: 58}, C: {A: 22, B: 67}},
-        B: {B: {A: 103, B: 76}, C: {A: 94, B: 85}}
-    };
-    const operationPairs = {
-        4: {n48: "DL", n77: "UL"},
-        5: {n48: "UL", n77: "DL"},
-        6: {n48: "DL", n77: "DL"},
-        7: {n48: "UL", n77: "UL"}
-    };
+    const operations = MAP.operations;
+    const experiments = MAP.experiments.filter(experiment => experiment.qualipoc);
     const metrics = {
         throughput: {
             label: "Throughput", unit: "Mbps", kind: "directional",
@@ -98,19 +91,23 @@
         return `${prefix}${metric.label}${metric.unit ? ` [${metric.unit}]` : ""}`;
     }
 
-    function updateLocationAvailability() {
-        const locationA = document.querySelector('input[name="debugLocation"][value="A"]');
-        locationA.disabled = state.set === "B";
-        if (locationA.disabled && state.location === "A") {
-            state.location = "B";
-            document.querySelector('input[name="debugLocation"][value="B"]').checked = true;
-        }
+    function updateExperimentAvailability() {
+        const updateGroup = (name, stateKey, values) => {
+            const inputs = [...document.querySelectorAll(`input[name="${name}"]`)];
+            inputs.forEach(input => input.disabled = !values.includes(input.value));
+            if (!values.includes(state[stateKey])) state[stateKey] = values[0];
+            inputs.forEach(input => input.checked = input.value === state[stateKey]);
+        };
+        updateGroup("debugSet", "set", [...new Set(experiments.map(item => item.set))]);
+        updateGroup("debugLocation", "location", [...new Set(experiments.filter(item => item.set === state.set).map(item => item.location))]);
+        updateGroup("debugConfig", "config", [...new Set(experiments.filter(item => item.set === state.set && item.location === state.location).map(item => item.config))]);
     }
 
     function selectedSeries() {
-        const pair = operationPairs[state.operation];
+        const pair = operations[state.operation];
         const metric = metrics[state.metric];
-        const number = String(experimentStarts[state.set][state.location][state.config] + state.operation).padStart(3, "0");
+        const experiment = experiments.find(item => item.set === state.set && item.location === state.location && item.config === state.config);
+        const number = String(experiment.start + state.operation).padStart(3, "0");
         const definitions = [
             {prefix: "C", band: "n48", direction: pair.n48},
             {prefix: "V", band: "n77", direction: pair.n77}
@@ -181,7 +178,7 @@
 
     function render() {
         chart.innerHTML = "";
-        const pair = operationPairs[state.operation];
+        const pair = operations[state.operation];
         const metric = metrics[state.metric];
         const series = selectedSeries();
         const maxTime = Math.max(1, Math.ceil(Math.max(0, ...series.flatMap(item => item.points.map(point => point[0])))));
@@ -214,14 +211,14 @@
     }));
     document.querySelectorAll('input[name="debugSet"]').forEach(input => input.addEventListener("change", event => {
         state.set = event.target.value;
-        updateLocationAvailability();
+        updateExperimentAvailability();
         render();
     }));
-    document.querySelectorAll('input[name="debugLocation"]').forEach(input => input.addEventListener("change", event => {state.location = event.target.value; render();}));
+    document.querySelectorAll('input[name="debugLocation"]').forEach(input => input.addEventListener("change", event => {state.location = event.target.value; updateExperimentAvailability(); render();}));
     document.querySelectorAll('input[name="debugConfig"]').forEach(input => input.addEventListener("change", event => {state.config = event.target.value; render();}));
     document.getElementById("debugOperation").addEventListener("change", event => {state.operation = Number(event.target.value); render();});
     document.getElementById("debugParameter").addEventListener("change", event => {state.metric = event.target.value; render();});
 
-    updateLocationAvailability();
+    updateExperimentAvailability();
     render();
 })();
