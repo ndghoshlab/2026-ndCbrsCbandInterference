@@ -305,11 +305,13 @@
         render();
     }
 
-    function savePng(svg, filename) {
+    function savePng(svg, filename, widthId = null) {
+        const pngWidth = widthId ? Math.max(600, Math.min(3000, Number(document.getElementById(widthId).value) || 1200)) : 2000;
+        const pngHeight = Math.round(pngWidth * 430 / 1000);
         const clone = svg.cloneNode(true);
         clone.setAttribute("xmlns", SVG_NS);
-        clone.setAttribute("width", "1000");
-        clone.setAttribute("height", "430");
+        clone.setAttribute("width", pngWidth);
+        clone.setAttribute("height", pngHeight);
         const style = document.createElementNS(SVG_NS, "style");
         style.textContent = `text{fill:#59635d;font-family:Arial,sans-serif;font-size:12px}.axis-title{fill:#152019;font-size:14px;font-weight:700}.grid-line{stroke:#dedbd2;stroke-dasharray:4 5}.band-edge{stroke:#787f7a;stroke-width:1.4}.axis-line{stroke:#7a837d}.series-line{fill:none;stroke-width:2.3;stroke-linejoin:round;stroke-linecap:round}.empty-state{fill:#89918c;font-family:Georgia,serif;font-size:18px;text-anchor:middle}`;
         clone.prepend(style);
@@ -317,8 +319,8 @@
         const url = URL.createObjectURL(blob), image = new Image();
         image.onload = () => {
             const canvas = document.createElement("canvas");
-            canvas.width = 2000;
-            canvas.height = 860;
+            canvas.width = pngWidth;
+            canvas.height = pngHeight;
             const context = canvas.getContext("2d");
             context.fillStyle = "#fffdf8";
             context.fillRect(0, 0, canvas.width, canvas.height);
@@ -349,7 +351,7 @@
     document.getElementById("saveFreqPng").addEventListener("click", () => savePng(freqChart, `spectrum-frequency-location${freqState.location}-config${freqState.config}.png`));
     document.getElementById("applyPowerXLimits").addEventListener("click", () => applyLimits(powerState.xLimits, "powerXMin", "powerXMax", powerSeries().flatMap(item => item.values), renderPower));
     document.getElementById("autoPowerXLimits").addEventListener("click", () => resetLimits(powerState.xLimits, "powerXMin", "powerXMax", renderPower));
-    document.getElementById("savePowerPng").addEventListener("click", () => savePng(powerChart, `spectrum-power-${powerState.band}-location${powerState.location}-config${powerState.config}.png`));
+    document.getElementById("savePowerPng").addEventListener("click", () => savePng(powerChart, `spectrum-power-${powerState.band}-location${powerState.location}-config${powerState.config}.png`, "powerPngWidth"));
 
     renderFrequency();
     renderPower();

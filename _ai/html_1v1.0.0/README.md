@@ -122,7 +122,7 @@ The x-axis explicitly marks 3650, 3660, 3700, 3800, and 3810 MHz. Manual y-axis 
 
 ### Spectrum (Power)
 
-This tab calculates an empirical CDF from one estimated band-power value per swept trace for either n48 (3660–3700 MHz) or n77 (3700–3800 MHz). The selected percentile interval is shown as a transparent vertical range, while the selected mean or median is shown as a vertical summary marker and in the legend. Manual x-axis limits and PNG download are available.
+This tab calculates an empirical CDF from one estimated band-power value per swept trace for either n48 (3660–3700 MHz) or n77 (3700–3800 MHz). The selected percentile interval is shown as a transparent vertical range, while the selected mean or median is shown as a vertical summary marker and in the legend. Manual x-axis limits and a 600–3000 px PNG export width are available.
 
 The preprocessing converts every bucket from dBm to mW and approximates PSD by dividing by the nominal 1 MHz RBW. It then integrates across frequency using trapezoidal integration and converts the result back to dBm:
 
