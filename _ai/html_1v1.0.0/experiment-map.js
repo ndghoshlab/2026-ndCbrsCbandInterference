@@ -16,6 +16,8 @@ window.EXPERIMENT_MAP={
         {"set": "B", "location": "B", "config": "B", "start": 76, "end": 84, "qualipoc": true, "spectrum": true},
         {"set": "B", "location": "C", "config": "B", "start": 85, "end": 93, "qualipoc": true, "spectrum": true},
         {"set": "B", "location": "C", "config": "A", "start": 94, "end": 102, "qualipoc": true, "spectrum": true},
-        {"set": "B", "location": "B", "config": "A", "start": 103, "end": 111, "qualipoc": true, "spectrum": true}
+        {"set": "B", "location": "B", "config": "A", "start": 103, "end": 111, "qualipoc": true, "spectrum": true},
+        {"set": "C", "location": "D", "config": "A", "start": 112, "end": 120, "qualipoc": true, "spectrum": false},
+        {"set": "C", "location": "D", "config": "B", "start": 121, "end": 129, "qualipoc": true, "spectrum": false}
     ]
 };

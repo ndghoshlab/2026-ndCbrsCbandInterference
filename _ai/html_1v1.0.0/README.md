@@ -15,7 +15,7 @@ Spectrum-analyzer CSVs are stored in `_data/specan` for Set B collections `076�
 
 ## Experiment design
 
-Measurements are organized into two sets. Set A contains the original measurements at all three locations. Set B contains the newer repeat measurements at Locations B and C; Location A is unavailable and disabled in the dashboard when Set B is selected.
+Measurements are organized into three sets. Set A contains the original measurements at Locations A, B, and C. Set B contains repeat measurements at Locations B and C. Set C contains PHY measurements at Location D only. Unavailable locations are disabled for the selected set; Set C automatically selects Location D and supports both configurations.
 
 | Set | Collections | Location | n48 configuration |
 |---|---|---|---|
@@ -29,8 +29,10 @@ Measurements are organized into two sets. Set A contains the original measuremen
 | B | `085–093` | C | B |
 | B | `094–102` | C | A |
 | B | `103–111` | B | A |
+| C | `112–120` | D | A |
+| C | `121–129` | D | B |
 
-`experiment-map.js` is the central mapping for collection range, set, location, configuration, data-source availability, and operation order. All tabs use this map to enable or disable filter choices; availability is not hardcoded into the HTML.
+`experiment-map.js` is the central mapping for collection range, set, location, configuration, data-source availability, and operation order. All tabs use this map to enable or disable filter choices; availability is not hardcoded into the HTML. PHY (DEBUG2) also derives its filter choices and default selections from this map.
 
 Every range contains nine experiments in this fixed order:
 
@@ -55,6 +57,7 @@ For example, collection range `049–057` represents Location A with n48 Config 
 - All n77 rows are restricted to `Cell Type == "MCG PCell"` during preprocessing.
 - The n77 MCG PCell rule is applied to Radio, PDSCH, and PUSCH data.
 - Invalid timestamps and nonnumeric measurement values are excluded for the affected parameter.
+- Set C has all 36 n48/n77 collection IDs in Radio and PDSCH. PUSCH has 34: `V_122` and `V_129` are absent because QualiPoc was in IDLE mode without active DL or UL throughput tests. Missing samples produce no curve and are skipped when pooling.
 
 ## Available parameters
 
@@ -88,7 +91,7 @@ The rightmost **INFO** tab is rendered from the repository-root `README.md`. Edi
 
 ### PHY (CDF)
 
-The left control panel selects the measurement set, location, n48 TDD configuration, parameter, and individual n48/n77 operation measurements. Each checkbox selects one curve; the paired columns reflect the two systems' operations during the same experiment. Location A is disabled for Set B because no Set B measurements were collected there.
+The left control panel selects the measurement set, location, n48 TDD configuration, parameter, and individual n48/n77 operation measurements. Each checkbox selects one curve; the paired columns reflect the two systems' operations during the same experiment. Set A enables Locations A/B/C, Set B enables B/C, and Set C enables D only.
 
 The dashboard contains two linked plots:
 
@@ -122,7 +125,7 @@ The parameter is shared by all entries and can be selected from the Radio, PDSCH
 
 ### Spectrum (Freq)
 
-This tab is available only for the four Set B ranges. Filter availability is derived from `experiment-map.js`, so Set A and Location A are automatically disabled. Each selected operation plots a frequency-domain median or linear-power mean with one of four transparent envelopes: 10th–90th, 5th–95th, 1st–99th, or minimum–maximum.
+This tab is available only for the four Set B ranges. Filter availability is derived from `experiment-map.js`, so Sets A/C and Locations A/D are automatically disabled. Set C has no spectrum recordings. Each selected operation plots a frequency-domain median or linear-power mean with one of four transparent envelopes: 10th–90th, 5th–95th, 1st–99th, or minimum–maximum.
 
 The x-axis explicitly marks 3650, 3660, 3700, 3800, and 3810 MHz. Manual y-axis limits can override the automatic range, and the currently rendered chart can be downloaded as PNG. The analyzer files contain 401 points at 400 kHz spacing with 1 MHz RBW, so adjacent frequency points overlap and are correlated. All 36 files contain approximately 60 seconds and 1,379–1,391 swept traces.
 

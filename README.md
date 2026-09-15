@@ -10,7 +10,11 @@
 
 ![Location geometry](_figures/figures-Page-2.jpg)
 
-**Set** identifies the measurement round. Set A is the original PHY campaign. Set B is the later campaign and contains the spectrum-analyzer recordings. Set B has no Location A measurements.
+**Set** identifies the measurement round. Set A is the original PHY campaign at Locations A, B, and C. Set B is the later campaign at Locations B and C and contains the spectrum-analyzer recordings. Set C contains PHY measurements at Location D: collections 112–120 use Config A, and 121–129 use Config B. Set C has no spectrum-analyzer recordings.
+
+Location D’s distances from the CBSD and n77 site have not been specified.
+
+QualiPoc ran in IDLE mode for n77 collections V_122 and V_129, without active DL or UL throughput tests. Their absent PUSCH measurements are expected; selections with no recorded samples display no curve.
 
 **n48 TDD Config** selects the CBSD slot pattern. Config A follows the same broad DL/UL timing as the live n77 carrier. Config B uses a different slot pattern, creating more opportunities for opposite-direction operation at the 3700 MHz band edge.
 

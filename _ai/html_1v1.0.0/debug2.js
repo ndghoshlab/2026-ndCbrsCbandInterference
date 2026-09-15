@@ -6,6 +6,7 @@
     const SVG_NS = "http://www.w3.org/2000/svg";
     const operations = MAP.operations;
     const experiments = MAP.experiments.filter(experiment => experiment.qualipoc);
+    const filterOptions = Object.fromEntries(["set", "location", "config"].map(key => [key, [...new Set(experiments.map(experiment => experiment[key]))]]));
     const colors = ["#0072B2", "#D55E00", "#009E73", "#CC79A7", "#E69F00"];
     const state = {parameter: "radio|SS-RSRP", entries: [], nextId: 1, xLimits: [null, null]};
     const plot = {left: 74, right: 965, top: 26, bottom: 355};
@@ -23,7 +24,7 @@
     function createEntry(prefix = "C") {
         return {
             id: state.nextId++, label: "", prefix,
-            sets: new Set(["A", "B"]), locations: new Set(["A", "B", "C"]), configs: new Set(["A", "B"]),
+            sets: new Set(filterOptions.set), locations: new Set(filterOptions.location), configs: new Set(filterOptions.config),
             operations: new Set(operations.map((_, index) => index))
         };
     }
@@ -71,9 +72,9 @@
                 <label class="field-label">Curve label</label>
                 <input class="curve-label-input" data-field="label" value="${escapeAttribute(entry.label)}" placeholder="Optional custom label">
                 <div class="curve-filter-row"><span>Band</span><select data-field="prefix"><option value="C" ${entry.prefix === "C" ? "selected" : ""}>n48</option><option value="V" ${entry.prefix === "V" ? "selected" : ""}>n77</option></select></div>
-                <div class="curve-filter-row"><span>Sets</span><div class="mini-checks">${checkboxes("sets", ["A", "B"], entry.sets, value => `Set ${value}`)}</div></div>
-                <div class="curve-filter-row"><span>Locations</span><div class="mini-checks">${checkboxes("locations", ["A", "B", "C"], entry.locations)}</div></div>
-                <div class="curve-filter-row"><span>Configs</span><div class="mini-checks">${checkboxes("configs", ["A", "B"], entry.configs, value => `Config ${value}`)}</div></div>
+                <div class="curve-filter-row"><span>Sets</span><div class="mini-checks">${checkboxes("sets", filterOptions.set, entry.sets, value => `Set ${value}`)}</div></div>
+                <div class="curve-filter-row"><span>Locations</span><div class="mini-checks">${checkboxes("locations", filterOptions.location, entry.locations)}</div></div>
+                <div class="curve-filter-row"><span>Configs</span><div class="mini-checks">${checkboxes("configs", filterOptions.config, entry.configs, value => `Config ${value}`)}</div></div>
                 <div class="curve-operations-head"><span>Operation pairs</span><div><button type="button" data-action="all">All</button><button type="button" data-action="clear">Clear</button></div></div>
                 <div class="curve-operation-grid">${checkboxes("operations", operations.map((_, operationIndex) => operationIndex), entry.operations, operationIndex => `${operations[operationIndex].n48}:${operations[operationIndex].n77}`)}</div>`;
             entryContainer.appendChild(card);
